@@ -1,0 +1,66 @@
+package cli
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/create"
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/del"
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/edit"
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/gen"
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/get"
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/list"
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/login"
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/logout"
+	"github.com/Albitko/secrets-armgour/internal/controller/cli/register"
+)
+
+type sender interface {
+	CreateCredentials(serviceName, serviceLogin, servicePassword, meta string) error
+}
+
+type cliCommands struct {
+	isAuth bool
+	s      sender
+	Cmd    *cobra.Command
+}
+
+func New(s sender) *cliCommands {
+	isAuth := false
+	rootCmd := &cobra.Command{
+		Use:   "armgour-cli",
+		Short: "Client for storing your secrets in armGOur service",
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			// TODO mock token check
+			// check if no token
+			content, err := os.ReadFile(".token")
+			if err != nil {
+				if os.IsNotExist(err) {
+					fmt.Println("AUTH please")
+				} else {
+					fmt.Println("Error reading file:", err)
+				}
+				return
+			}
+			fmt.Println("isAuth", isAuth, content)
+			// or check if token expired
+			isAuth = true
+		},
+	}
+	rootCmd.AddCommand(login.New())
+	rootCmd.AddCommand(logout.New())
+	rootCmd.AddCommand(register.New())
+	rootCmd.AddCommand(list.New())
+	rootCmd.AddCommand(get.New())
+	rootCmd.AddCommand(create.New(s))
+	rootCmd.AddCommand(edit.New())
+	rootCmd.AddCommand(del.New())
+	rootCmd.AddCommand(gen.New())
+	return &cliCommands{
+		s:      s,
+		Cmd:    rootCmd,
+		isAuth: isAuth,
+	}
+}
