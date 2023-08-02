@@ -3,14 +3,17 @@ package list
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/Albitko/secrets-armgour/internal/controller/cli/list/all"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/list/binary"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/list/cards"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/list/credentials"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/list/text"
 )
 
-func New() *cobra.Command {
+type sender interface {
+	GetAllSecrets()
+}
+
+func New(s sender) *cobra.Command {
 	listCmd := &cobra.Command{
 		Use:   "list",
 		Short: "List user saved secrets",
@@ -18,10 +21,9 @@ func New() *cobra.Command {
 			//c.sender.List
 		},
 	}
-	listCmd.AddCommand(credentials.New())
-	listCmd.AddCommand(all.New())
-	listCmd.AddCommand(binary.New())
-	listCmd.AddCommand(cards.New())
-	listCmd.AddCommand(text.New())
+	listCmd.AddCommand(credentials.New(s))
+	listCmd.AddCommand(binary.New(s))
+	listCmd.AddCommand(cards.New(s))
+	listCmd.AddCommand(text.New(s))
 	return listCmd
 }

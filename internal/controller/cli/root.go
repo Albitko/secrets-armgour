@@ -22,6 +22,8 @@ type sender interface {
 	CreateText(title, body, meta string) error
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 	CreateBinary(title, dataPath, meta string) error
+
+	GetAllSecrets()
 }
 
 type cliCommands struct {
@@ -55,7 +57,7 @@ func New(s sender) *cliCommands {
 	rootCmd.AddCommand(login.New())
 	rootCmd.AddCommand(logout.New())
 	rootCmd.AddCommand(register.New())
-	rootCmd.AddCommand(list.New())
+	rootCmd.AddCommand(list.New(s))
 	rootCmd.AddCommand(get.New())
 	rootCmd.AddCommand(create.New(s))
 	rootCmd.AddCommand(edit.New())

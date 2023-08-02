@@ -15,6 +15,8 @@ type secretsProcessor interface {
 	BinaryCreation(binary entity.UserBinary) error
 	TextCreation(text entity.UserText) error
 	CredentialsCreation(text entity.UserCredentials) error
+
+	ListUserData(data string) (interface{}, error)
 }
 
 type handler struct {
@@ -34,7 +36,23 @@ func (h *handler) Register(ctx *gin.Context) {
 }
 
 func (h *handler) List(ctx *gin.Context) {
-
+	data := ctx.Param("data")
+	res, err := h.processor.ListUserData(data)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	switch data {
+	case "credentials":
+		res = res.(entity.CutCredentials)
+	case "binary":
+		res = res.(entity.CutBinary)
+	case "text":
+		res = res.(entity.CutText)
+	case "card":
+		res = res.(entity.CutCard)
+	}
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (h *handler) Get(ctx *gin.Context) {

@@ -17,6 +17,11 @@ type sender struct {
 	api httpAPI
 }
 
+func (s *sender) GetAllSecrets() {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (s *sender) CreateBinary(title, dataPath, meta string) error {
 	content, err := os.ReadFile(dataPath)
 	if err != nil {

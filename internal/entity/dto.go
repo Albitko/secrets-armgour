@@ -26,3 +26,27 @@ type UserBinary struct {
 	B64Content string
 	Meta       string
 }
+
+type CutCard struct {
+	Id         uint32
+	CardNumber string `json:"card-number"`
+	Meta       string `json:"meta"`
+}
+
+type CutText struct {
+	Id    uint32
+	Title string `json:"title"`
+	Meta  string `json:"meta"`
+}
+
+type CutBinary struct {
+	Id    uint32
+	Title string `json:"title"`
+	Meta  string `json:"meta"`
+}
+
+type CutCredentials struct {
+	Id          uint32
+	ServiceName string `json:"service-name"`
+	Meta        string `json:"meta"`
+}

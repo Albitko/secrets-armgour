@@ -59,6 +59,153 @@ type postgres struct {
 	db *sql.DB
 }
 
+func closeRows(row *sql.Rows) {
+	err := row.Close()
+	if err != nil {
+		logger.Zap.Errorf(
+			"error closing rows %s", err.Error(),
+		)
+	}
+}
+
+func (d *postgres) queryRows(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+	var rows *sql.Rows
+
+	statement, err := d.db.PrepareContext(
+		ctx,
+		query,
+	)
+	defer func(statement *sql.Stmt) {
+		err := statement.Close()
+		if err != nil {
+			logger.Zap.Errorf(
+				"error while closing statement %s", err.Error(),
+			)
+		}
+	}(statement)
+
+	if err != nil {
+		logger.Zap.Errorf(
+			"error creating statement %s", err.Error(),
+		)
+		return rows, err
+	}
+	rows, err = statement.QueryContext(ctx, args...)
+
+	if err != nil {
+		logger.Zap.Errorf(
+			"error query execution %s", err.Error(),
+		)
+		return rows, err
+	}
+
+	if err = rows.Err(); err != nil {
+		logger.Zap.Errorf(
+			"error row %s", err.Error(),
+		)
+		return rows, err
+	}
+	return rows, nil
+}
+
+func (d *postgres) SelectUserData(data string) (interface{}, error) {
+	var rows *sql.Rows
+	var err error
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var res interface{}
+
+	switch data {
+	case "credentials":
+		var credentials []entity.CutCredentials
+		var credential entity.CutCredentials
+		query := `
+		select id,service,meta  from credentials_data;
+		`
+		rows, err = d.queryRows(ctx, query)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error query execution %s", err.Error(),
+			)
+			return res, err
+		}
+		for rows.Next() {
+			err = rows.Scan(&credential.Id, &credential.ServiceName, &credential.Meta)
+			if err != nil {
+				return res, err
+			}
+			credentials = append(credentials, credential)
+		}
+		res = credentials
+	case "binary":
+		var bins []entity.CutText
+		var bin entity.CutText
+		query := `
+		select id,title,meta  from binary_data;
+		`
+		rows, err = d.queryRows(ctx, query)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error query execution %s", err.Error(),
+			)
+			return res, err
+		}
+		for rows.Next() {
+			err = rows.Scan(&bin.Id, &bin.Title, &bin.Meta)
+			if err != nil {
+				return res, err
+			}
+			bins = append(bins, bin)
+		}
+		res = bins
+	case "text":
+		var texts []entity.CutText
+		var text entity.CutText
+		query := `
+		select id,title,meta  from text_data;
+		`
+		rows, err = d.queryRows(ctx, query)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error query execution %s", err.Error(),
+			)
+			return res, err
+		}
+		for rows.Next() {
+			err = rows.Scan(&text.Id, &text.Title, &text.Meta)
+			if err != nil {
+				return res, err
+			}
+			texts = append(texts, text)
+		}
+		res = texts
+	case "card":
+		var cards []entity.CutCard
+		var card entity.CutCard
+		query := `
+		select id,card_number,meta  from cards_data;
+		`
+		rows, err = d.queryRows(ctx, query)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error query execution %s", err.Error(),
+			)
+			return res, err
+		}
+		for rows.Next() {
+			err = rows.Scan(&card.Id, &card.CardNumber, &card.Meta)
+			if err != nil {
+				return res, err
+			}
+			cards = append(cards, card)
+		}
+		res = cards
+	}
+	defer closeRows(rows)
+
+	return res, nil
+}
+
 func closeStatement(statement *sql.Stmt) {
 	if statement == nil {
 		logger.Zap.Errorf("error: nil statement")

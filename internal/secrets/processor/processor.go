@@ -12,10 +12,17 @@ type repository interface {
 	InsertCredentials(credentials entity.UserCredentials) error
 	InsertBinary(bin entity.UserBinary, data []byte) error
 	InsertText(text entity.UserText) error
+
+	SelectUserData(data string) (interface{}, error)
 }
 
 type processor struct {
 	repo repository
+}
+
+func (p processor) ListUserData(data string) (interface{}, error) {
+	res, err := p.repo.SelectUserData(data)
+	return res, err
 }
 
 func (p processor) BinaryCreation(binary entity.UserBinary) error {

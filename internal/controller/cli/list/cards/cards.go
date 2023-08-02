@@ -4,7 +4,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func New() *cobra.Command {
+type sender interface {
+}
+
+func New(s sender) *cobra.Command {
 	listCmd := &cobra.Command{
 		Use:   "cards",
 		Short: "List user saved cards secrets",
