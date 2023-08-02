@@ -28,25 +28,25 @@ type UserBinary struct {
 }
 
 type CutCard struct {
-	Id         uint32
+	Id         uint32 `json:"id"`
 	CardNumber string `json:"card-number"`
 	Meta       string `json:"meta"`
 }
 
 type CutText struct {
-	Id    uint32
+	Id    uint32 `json:"id"`
 	Title string `json:"title"`
 	Meta  string `json:"meta"`
 }
 
 type CutBinary struct {
-	Id    uint32
+	Id    uint32 `json:"id"`
 	Title string `json:"title"`
 	Meta  string `json:"meta"`
 }
 
 type CutCredentials struct {
-	Id          uint32
+	Id          uint32 `json:"id"`
 	ServiceName string `json:"service-name"`
 	Meta        string `json:"meta"`
 }

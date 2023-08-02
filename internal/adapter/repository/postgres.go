@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -138,8 +139,8 @@ func (d *postgres) SelectUserData(data string) (interface{}, error) {
 		}
 		res = credentials
 	case "binary":
-		var bins []entity.CutText
-		var bin entity.CutText
+		var bins []entity.CutBinary
+		var bin entity.CutBinary
 		query := `
 		select id,title,meta  from binary_data;
 		`
@@ -178,6 +179,7 @@ func (d *postgres) SelectUserData(data string) (interface{}, error) {
 			}
 			texts = append(texts, text)
 		}
+		fmt.Println(texts)
 		res = texts
 	case "card":
 		var cards []entity.CutCard

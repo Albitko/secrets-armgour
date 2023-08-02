@@ -2,8 +2,11 @@ package sender
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
 type httpAPI interface {
@@ -11,15 +14,47 @@ type httpAPI interface {
 	CreateText(title, body, meta string) error
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 	CreateBinary(title, b64Content, meta string) error
+	ListSecrets(data string) (string, error)
 }
 
 type sender struct {
 	api httpAPI
 }
 
-func (s *sender) GetAllSecrets() {
-	//TODO implement me
-	panic("implement me")
+func (s *sender) GetUserSecrets(data string) (interface{}, error) {
+	resp, err := s.api.ListSecrets(data)
+	var res interface{}
+	switch data {
+	case "credentials":
+		var cred []entity.CutCredentials
+		err = json.Unmarshal([]byte(resp), &cred)
+		if err != nil {
+			return cred, err
+		}
+		res = cred
+	case "binary":
+		var bin []entity.CutBinary
+		err = json.Unmarshal([]byte(resp), &bin)
+		if err != nil {
+			return bin, err
+		}
+		res = bin
+	case "text":
+		var text []entity.CutText
+		err = json.Unmarshal([]byte(resp), &text)
+		if err != nil {
+			return text, err
+		}
+		res = text
+	case "card":
+		var card []entity.CutCard
+		err = json.Unmarshal([]byte(resp), &card)
+		if err != nil {
+			return card, err
+		}
+		res = card
+	}
+	return res, err
 }
 
 func (s *sender) CreateBinary(title, dataPath, meta string) error {

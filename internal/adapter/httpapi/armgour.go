@@ -13,6 +13,11 @@ type httpAPI struct {
 	client     *resty.Client
 }
 
+func (a *httpAPI) ListSecrets(data string) (string, error) {
+	resp, err := a.client.R().Get(a.armgourURL + "/v1/secrets/list/" + data)
+	return resp.String(), err
+}
+
 func (a *httpAPI) CreateBinary(title, b64Content, meta string) error {
 	binary := entity.UserBinary{
 		Title:      title,

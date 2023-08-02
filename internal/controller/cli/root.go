@@ -23,7 +23,7 @@ type sender interface {
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 	CreateBinary(title, dataPath, meta string) error
 
-	GetAllSecrets()
+	GetUserSecrets(data string) (interface{}, error)
 }
 
 type cliCommands struct {

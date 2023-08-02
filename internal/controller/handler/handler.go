@@ -44,13 +44,17 @@ func (h *handler) List(ctx *gin.Context) {
 	}
 	switch data {
 	case "credentials":
-		res = res.(entity.CutCredentials)
+		fmt.Println(res)
+		res = res.([]entity.CutCredentials)
 	case "binary":
-		res = res.(entity.CutBinary)
+		fmt.Println(res)
+		res = res.([]entity.CutBinary)
 	case "text":
-		res = res.(entity.CutText)
+		fmt.Println(res)
+		res = res.([]entity.CutText)
 	case "card":
-		res = res.(entity.CutCard)
+		fmt.Println(res)
+		res = res.([]entity.CutCard)
 	}
 	ctx.JSON(http.StatusOK, res)
 }
