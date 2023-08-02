@@ -1,7 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+
+	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
 type secretsProcessor interface {
@@ -35,7 +41,14 @@ func (h *handler) GeneratePassword(ctx *gin.Context) {
 
 }
 
-func (h *handler) Create(ctx *gin.Context) {
+func (h *handler) CredentialsCreate(ctx *gin.Context) {
+	var requestJSON entity.UserCredentials
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&requestJSON); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println("!!!!!")
+	fmt.Println(requestJSON)
 
 }
 
