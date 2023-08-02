@@ -20,9 +20,20 @@ func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, me
 		ServicePassword: servicePassword,
 		Meta:            meta,
 	}
-	resp, _ := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/secrets/credentials/create")
+	resp, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/secrets/credentials/create")
 	fmt.Println(resp.String())
-	return nil
+	return err
+}
+
+func (a *httpAPI) CreateText(title, body, meta string) error {
+	text := entity.SecretText{
+		Title: title,
+		Body:  body,
+		Meta:  meta,
+	}
+	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/text/create")
+	fmt.Println(resp.String())
+	return err
 }
 
 func New(serverURL string) *httpAPI {

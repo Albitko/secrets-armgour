@@ -6,3 +6,9 @@ type UserCredentials struct {
 	ServicePassword string
 	Meta            string
 }
+
+type SecretText struct {
+	Title string
+	Body  string
+	Meta  string
+}

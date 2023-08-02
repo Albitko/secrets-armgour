@@ -47,7 +47,6 @@ func (h *handler) CredentialsCreate(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("!!!!!")
 	fmt.Println(requestJSON)
 
 }

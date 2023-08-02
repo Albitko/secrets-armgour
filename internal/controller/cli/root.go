@@ -19,6 +19,7 @@ import (
 
 type sender interface {
 	CreateCredentials(serviceName, serviceLogin, servicePassword, meta string) error
+	CreateText(title, body, meta string) error
 }
 
 type cliCommands struct {
