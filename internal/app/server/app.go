@@ -9,10 +9,12 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/config/server"
 	"github.com/Albitko/secrets-armgour/internal/controller/handler"
 	"github.com/Albitko/secrets-armgour/internal/secrets/processor"
+	"github.com/Albitko/secrets-armgour/internal/utils/logger"
 )
 
 func Run() {
 	appCfg, err := server.Config()
+	logger.Init()
 	if err != nil {
 		panic(fmt.Errorf("can't configure application: %w", err))
 	}
@@ -35,9 +37,9 @@ func Run() {
 	router.GET("/v1/user/register", h.Register)
 	router.GET("/v1/secrets/list", h.List)
 	router.GET("/v1/secrets/get", h.Get)
-	router.POST("/v1/secrets/create", h.Create)
+	router.POST("/v1/secrets/credentials/create", h.CredentialsCreate)
 	router.PUT("/v1/secrets/edit", h.Edit)
-	router.DELETE("/v1/secrets/delete", h.Delete)
+	router.DELETE("/v1/secrets/del", h.Delete)
 	router.GET("/v1/secrets/generate_password", h.GeneratePassword)
 
 	err = router.Run(appCfg.ServerAddr)
