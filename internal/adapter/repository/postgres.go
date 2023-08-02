@@ -3,6 +3,8 @@ package repository
 import (
 	"database/sql"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+
 	"github.com/Albitko/secrets-armgour/internal/utils/logger"
 )
 
