@@ -11,6 +11,10 @@ import (
 )
 
 type secretsProcessor interface {
+	CardCreation(card entity.UserCard) error
+	BinaryCreation(binary entity.UserBinary) error
+	TextCreation(text entity.UserText) error
+	CredentialsCreation(text entity.UserCredentials) error
 }
 
 type handler struct {
@@ -42,12 +46,17 @@ func (h *handler) GeneratePassword(ctx *gin.Context) {
 }
 
 func (h *handler) CredentialsCreate(ctx *gin.Context) {
-	var requestJSON entity.UserCredentials
-	if err := json.NewDecoder(ctx.Request.Body).Decode(&requestJSON); err != nil {
+	var credentials entity.UserCredentials
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&credentials); err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(requestJSON)
+	err := h.processor.CredentialsCreation(credentials)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(credentials)
 
 }
 
@@ -60,30 +69,45 @@ func (h *handler) Delete(ctx *gin.Context) {
 }
 
 func (h *handler) TextCreate(ctx *gin.Context) {
-	var requestJSON entity.UserText
-	if err := json.NewDecoder(ctx.Request.Body).Decode(&requestJSON); err != nil {
+	var text entity.UserText
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&text); err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(requestJSON)
+	err := h.processor.TextCreation(text)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(text)
 }
 
 func (h *handler) BinaryCreate(ctx *gin.Context) {
-	var requestJSON entity.UserBinary
-	if err := json.NewDecoder(ctx.Request.Body).Decode(&requestJSON); err != nil {
+	var binary entity.UserBinary
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&binary); err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(requestJSON)
+	err := h.processor.BinaryCreation(binary)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(binary)
 }
 
 func (h *handler) CardCreate(ctx *gin.Context) {
-	var requestJSON entity.UserCard
-	if err := json.NewDecoder(ctx.Request.Body).Decode(&requestJSON); err != nil {
+	var card entity.UserCard
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&card); err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(requestJSON)
+	err := h.processor.CardCreation(card)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(card)
 }
 
 func New(processor secretsProcessor) *handler {
