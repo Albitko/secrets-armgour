@@ -7,8 +7,16 @@ type UserCredentials struct {
 	Meta            string
 }
 
-type SecretText struct {
+type UserText struct {
 	Title string
 	Body  string
 	Meta  string
+}
+
+type UserCard struct {
+	CardHolder         string
+	CardNumber         string
+	CardValidityPeriod string
+	CvcCode            string
+	Meta               string
 }

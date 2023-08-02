@@ -7,10 +7,17 @@ import (
 type httpAPI interface {
 	SendCredentials(serviceName, serviceLogin, servicePassword, meta string) error
 	CreateText(title, body, meta string) error
+	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 }
 
 type sender struct {
 	api httpAPI
+}
+
+func (s *sender) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
+	fmt.Println(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
+	err := s.api.CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
+	return err
 }
 
 func (s *sender) CreateText(title, body, meta string) error {

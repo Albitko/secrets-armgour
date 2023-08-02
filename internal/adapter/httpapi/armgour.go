@@ -26,12 +26,25 @@ func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, me
 }
 
 func (a *httpAPI) CreateText(title, body, meta string) error {
-	text := entity.SecretText{
+	text := entity.UserText{
 		Title: title,
 		Body:  body,
 		Meta:  meta,
 	}
 	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/text/create")
+	fmt.Println(resp.String())
+	return err
+}
+
+func (a *httpAPI) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
+	text := entity.UserCard{
+		CardHolder:         cardHolder,
+		CardNumber:         cardNumber,
+		CardValidityPeriod: cardValidityPeriod,
+		CvcCode:            cvcCode,
+		Meta:               meta,
+	}
+	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/card/create")
 	fmt.Println(resp.String())
 	return err
 }
