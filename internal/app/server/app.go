@@ -37,7 +37,12 @@ func Run() {
 	router.GET("/v1/user/register", h.Register)
 	router.GET("/v1/secrets/list", h.List)
 	router.GET("/v1/secrets/get", h.Get)
+
 	router.POST("/v1/secrets/credentials/create", h.CredentialsCreate)
+	router.POST("/v1/secrets/text/create", h.TextCreate)
+	router.POST("/v1/secrets/binary/create", h.BinaryCreate)
+	router.POST("/v1/secrets/card/create", h.CardCreate)
+
 	router.PUT("/v1/secrets/edit", h.Edit)
 	router.DELETE("/v1/secrets/del", h.Delete)
 	router.GET("/v1/secrets/generate_password", h.GeneratePassword)

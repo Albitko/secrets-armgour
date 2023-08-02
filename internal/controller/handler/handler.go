@@ -59,6 +59,33 @@ func (h *handler) Delete(ctx *gin.Context) {
 
 }
 
+func (h *handler) TextCreate(ctx *gin.Context) {
+	var requestJSON entity.UserText
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&requestJSON); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(requestJSON)
+}
+
+func (h *handler) BinaryCreate(ctx *gin.Context) {
+	var requestJSON entity.UserBinary
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&requestJSON); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(requestJSON)
+}
+
+func (h *handler) CardCreate(ctx *gin.Context) {
+	var requestJSON entity.UserCard
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&requestJSON); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(requestJSON)
+}
+
 func New(processor secretsProcessor) *handler {
 	return &handler{
 		processor: processor,
