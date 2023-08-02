@@ -1,27 +1,33 @@
 package binary
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
 type sender interface {
+	CreateBinary(title, dataPath, meta string) error
 }
 
 func New(s sender) *cobra.Command {
-	var id string
+	var title, dataPath, meta string
 	createCmd := &cobra.Command{
 		Use:   "binary",
 		Short: "Create user binary secret",
 		Run: func(cmd *cobra.Command, args []string) {
-			//c.sender.List
+			err := s.CreateBinary(title, dataPath, meta)
+			if err != nil {
+				fmt.Println(err)
+			}
 		},
 	}
 	createCmd.PersistentFlags().StringVarP(
-		&id, "path", "p", "", "Path to binary file")
+		&dataPath, "path", "p", "", "Path to binary file")
 	createCmd.PersistentFlags().StringVarP(
-		&id, "title", "t", "", "Title for binary secret")
+		&title, "title", "t", "", "Title for binary secret")
 	createCmd.PersistentFlags().StringVarP(
-		&id, "meta", "m", "", "Additional info about secret")
+		&meta, "meta", "m", "", "Additional info about secret")
 	err := createCmd.MarkPersistentFlagRequired("path")
 	if err != nil {
 		// TODO

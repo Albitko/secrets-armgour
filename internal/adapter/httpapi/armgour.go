@@ -13,6 +13,17 @@ type httpAPI struct {
 	client     *resty.Client
 }
 
+func (a *httpAPI) CreateBinary(title, b64Content, meta string) error {
+	binary := entity.UserBinary{
+		Title:      title,
+		B64Content: b64Content,
+		Meta:       meta,
+	}
+	resp, err := a.client.R().SetBody(binary).Post(a.armgourURL + "/v1/secrets/binary/create")
+	fmt.Println(resp.String())
+	return err
+}
+
 func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, meta string) error {
 	userCredentials := entity.UserCredentials{
 		ServiceLogin:    serviceLogin,
@@ -37,14 +48,14 @@ func (a *httpAPI) CreateText(title, body, meta string) error {
 }
 
 func (a *httpAPI) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
-	text := entity.UserCard{
+	card := entity.UserCard{
 		CardHolder:         cardHolder,
 		CardNumber:         cardNumber,
 		CardValidityPeriod: cardValidityPeriod,
 		CvcCode:            cvcCode,
 		Meta:               meta,
 	}
-	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/card/create")
+	resp, err := a.client.R().SetBody(card).Post(a.armgourURL + "/v1/secrets/card/create")
 	fmt.Println(resp.String())
 	return err
 }

@@ -20,3 +20,9 @@ type UserCard struct {
 	CvcCode            string
 	Meta               string
 }
+
+type UserBinary struct {
+	Title      string
+	B64Content string
+	Meta       string
+}

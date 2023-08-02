@@ -13,6 +13,7 @@ type sender interface {
 	CreateCredentials(serviceName, serviceLogin, servicePassword, meta string) error
 	CreateText(title, body, meta string) error
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
+	CreateBinary(title, dataPath, meta string) error
 }
 
 func New(s sender) *cobra.Command {

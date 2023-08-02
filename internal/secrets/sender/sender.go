@@ -1,17 +1,32 @@
 package sender
 
 import (
+	"encoding/base64"
 	"fmt"
+	"os"
 )
 
 type httpAPI interface {
 	SendCredentials(serviceName, serviceLogin, servicePassword, meta string) error
 	CreateText(title, body, meta string) error
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
+	CreateBinary(title, b64Content, meta string) error
 }
 
 type sender struct {
 	api httpAPI
+}
+
+func (s *sender) CreateBinary(title, dataPath, meta string) error {
+	content, err := os.ReadFile(dataPath)
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return err
+	}
+	b64Content := base64.StdEncoding.EncodeToString(content)
+	fmt.Println("Encoded Content:", b64Content)
+	err = s.api.CreateBinary(title, b64Content, meta)
+	return err
 }
 
 func (s *sender) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
