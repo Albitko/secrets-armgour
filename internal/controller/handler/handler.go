@@ -19,6 +19,11 @@ type secretsProcessor interface {
 	ListUserData(data string) (interface{}, error)
 	GetUserData(data, id string) (interface{}, error)
 	DeleteUserData(data, id string) error
+
+	CardEdit(index string, card entity.UserCard) error
+	BinaryEdit(index string, binary entity.UserBinary) error
+	TextEdit(index string, text entity.UserText) error
+	CredentialsEdit(index string, text entity.UserCredentials) error
 }
 
 type handler struct {
@@ -124,7 +129,6 @@ func (h *handler) TextCreate(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(text)
 }
 
 func (h *handler) BinaryCreate(ctx *gin.Context) {
@@ -138,7 +142,6 @@ func (h *handler) BinaryCreate(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(binary)
 }
 
 func (h *handler) CardCreate(ctx *gin.Context) {
@@ -152,7 +155,65 @@ func (h *handler) CardCreate(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(card)
+}
+
+func (h *handler) CredentialsEdit(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var credentials entity.UserCredentials
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&credentials); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	err := h.processor.CredentialsEdit(id, credentials)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+}
+
+func (h *handler) TextEdit(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var text entity.UserText
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&text); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	err := h.processor.TextEdit(id, text)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+}
+
+func (h *handler) BinaryEdit(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var binary entity.UserBinary
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&binary); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	err := h.processor.BinaryEdit(id, binary)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+}
+
+func (h *handler) CardEdit(ctx *gin.Context) {
+	id := ctx.Param("id")
+	var card entity.UserCard
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&card); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	err := h.processor.CardEdit(id, card)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
 }
 
 func New(processor secretsProcessor) *handler {

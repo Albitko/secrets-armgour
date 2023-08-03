@@ -1,30 +1,45 @@
 package binary
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-func New() *cobra.Command {
-	var id string
+type sender interface {
+	EditBinary(index int, title, dataPath, meta string) error
+}
+
+func New(s sender) *cobra.Command {
+	var title, dataPath, meta string
+	var index int
 	editCmd := &cobra.Command{
 		Use:   "binary",
-		Short: "Edit user binary secret",
+		Short: "Create user binary secret",
 		Run: func(cmd *cobra.Command, args []string) {
-			//c.sender.List
+			err := s.EditBinary(index, title, dataPath, meta)
+			if err != nil {
+				fmt.Println(err)
+			}
 		},
 	}
 	editCmd.PersistentFlags().StringVarP(
-		&id, "id", "i", "", "Secret ID")
-	err := editCmd.MarkPersistentFlagRequired("id")
+		&dataPath, "path", "p", "", "Path to binary file")
+	editCmd.PersistentFlags().StringVarP(
+		&title, "title", "t", "", "Title for binary secret")
+	editCmd.PersistentFlags().StringVarP(
+		&meta, "meta", "m", "", "Additional info about secret")
+	err := editCmd.MarkPersistentFlagRequired("path")
 	if err != nil {
 		// TODO
 		return nil
 	}
-	editCmd.PersistentFlags().StringVarP(
-		&id, "path", "p", "", "Path to binary file")
-	editCmd.PersistentFlags().StringVarP(
-		&id, "title", "t", "", "Title for binary secret")
-	editCmd.PersistentFlags().StringVarP(
-		&id, "meta", "m", "", "Additional info about secret")
+	err = editCmd.MarkPersistentFlagRequired("title")
+	if err != nil {
+		// TODO
+		return nil
+	}
+	editCmd.Flags().IntVarP(
+		&index, "index", "i", 0, "index")
 	return editCmd
 }

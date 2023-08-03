@@ -14,6 +14,49 @@ type httpAPI struct {
 	client     *resty.Client
 }
 
+func (a *httpAPI) EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error {
+	userCredentials := entity.UserCredentials{
+		ServiceLogin:    serviceLogin,
+		ServiceName:     serviceName,
+		ServicePassword: servicePassword,
+		Meta:            meta,
+	}
+	_, err := a.client.R().SetBody(userCredentials).Put(a.armgourURL + "/v1/secrets/credentials/" + strconv.Itoa(index))
+	return err
+}
+
+func (a *httpAPI) EditText(index int, title, body, meta string) error {
+	text := entity.UserText{
+		Title: title,
+		Body:  body,
+		Meta:  meta,
+	}
+	_, err := a.client.R().SetBody(text).Put(a.armgourURL + "/v1/secrets/text/" + strconv.Itoa(index))
+	return err
+}
+
+func (a *httpAPI) EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
+	card := entity.UserCard{
+		CardHolder:         cardHolder,
+		CardNumber:         cardNumber,
+		CardValidityPeriod: cardValidityPeriod,
+		CvcCode:            cvcCode,
+		Meta:               meta,
+	}
+	_, err := a.client.R().SetBody(card).Put(a.armgourURL + "/v1/secrets/card/" + strconv.Itoa(index))
+	return err
+}
+
+func (a *httpAPI) EditBinary(index int, title, b64Content, meta string) error {
+	binary := entity.UserBinary{
+		Title:      title,
+		B64Content: b64Content,
+		Meta:       meta,
+	}
+	_, err := a.client.R().SetBody(binary).Put(a.armgourURL + "/v1/secrets/binary/" + strconv.Itoa(index))
+	return err
+}
+
 func (a *httpAPI) DeleteUserSecrets(secretType string, idx int) error {
 	_, err := a.client.R().Delete(a.armgourURL + "/v1/secrets/" + secretType + "/" + strconv.Itoa(idx))
 	return err
@@ -35,8 +78,7 @@ func (a *httpAPI) CreateBinary(title, b64Content, meta string) error {
 		B64Content: b64Content,
 		Meta:       meta,
 	}
-	resp, err := a.client.R().SetBody(binary).Post(a.armgourURL + "/v1/secrets/binary")
-	fmt.Println(resp.String())
+	_, err := a.client.R().SetBody(binary).Post(a.armgourURL + "/v1/secrets/binary")
 	return err
 }
 

@@ -3,6 +3,7 @@ package processor
 import (
 	"encoding/base64"
 	"fmt"
+	"strconv"
 
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
@@ -13,6 +14,11 @@ type repository interface {
 	InsertBinary(bin entity.UserBinary, data []byte) error
 	InsertText(text entity.UserText) error
 
+	UpdateCard(index int, card entity.UserCard) error
+	UpdateCredentials(index int, credentials entity.UserCredentials) error
+	UpdateBinary(index int, bin entity.UserBinary, data []byte) error
+	UpdateText(index int, text entity.UserText) error
+
 	SelectUserData(data string) (interface{}, error)
 	GetUserData(data, id string) (interface{}, error)
 	DeleteUserData(data, id string) error
@@ -20,6 +26,51 @@ type repository interface {
 
 type processor struct {
 	repo repository
+}
+
+func (p *processor) CardEdit(index string, card entity.UserCard) error {
+	intIndex, err := strconv.Atoi(index)
+	if err != nil {
+		fmt.Println("Error parsing index:", err)
+		return err
+	}
+	err = p.repo.UpdateCard(intIndex, card)
+	return err
+}
+
+func (p *processor) BinaryEdit(index string, binary entity.UserBinary) error {
+	decodedContent, err := base64.StdEncoding.DecodeString(binary.B64Content)
+	if err != nil {
+		fmt.Println("Error decoding content:", err)
+		return err
+	}
+	intIndex, err := strconv.Atoi(index)
+	if err != nil {
+		fmt.Println("Error parsing index:", err)
+		return err
+	}
+	err = p.repo.UpdateBinary(intIndex, binary, decodedContent)
+	return err
+}
+
+func (p *processor) TextEdit(index string, text entity.UserText) error {
+	intIndex, err := strconv.Atoi(index)
+	if err != nil {
+		fmt.Println("Error parsing index:", err)
+		return err
+	}
+	err = p.repo.UpdateText(intIndex, text)
+	return err
+}
+
+func (p *processor) CredentialsEdit(index string, credentials entity.UserCredentials) error {
+	intIndex, err := strconv.Atoi(index)
+	if err != nil {
+		fmt.Println("Error parsing index:", err)
+		return err
+	}
+	err = p.repo.UpdateCredentials(intIndex, credentials)
+	return err
 }
 
 func (p *processor) DeleteUserData(data, id string) error {

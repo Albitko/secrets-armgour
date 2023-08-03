@@ -9,7 +9,14 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/edit/text"
 )
 
-func New() *cobra.Command {
+type sender interface {
+	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error
+	EditBinary(index int, title, dataPath, meta string) error
+	EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
+	EditText(index int, title, body, meta string) error
+}
+
+func New(s sender) *cobra.Command {
 	editCmd := &cobra.Command{
 		Use:   "edit",
 		Short: "Edit secret data",
@@ -17,9 +24,9 @@ func New() *cobra.Command {
 			//c.sender.List
 		},
 	}
-	editCmd.AddCommand(credentials.New())
-	editCmd.AddCommand(binary.New())
-	editCmd.AddCommand(cards.New())
-	editCmd.AddCommand(text.New())
+	editCmd.AddCommand(credentials.New(s))
+	editCmd.AddCommand(binary.New(s))
+	editCmd.AddCommand(cards.New(s))
+	editCmd.AddCommand(text.New(s))
 	return editCmd
 }

@@ -26,6 +26,10 @@ type sender interface {
 	ListUserSecrets(data string) (interface{}, error)
 	GetUserSecrets(secretType string, idx int) (interface{}, error)
 	DeleteUserSecrets(secretType string, idx int) error
+	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error
+	EditBinary(index int, title, dataPath, meta string) error
+	EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
+	EditText(index int, title, body, meta string) error
 }
 
 type cliCommands struct {
@@ -62,7 +66,7 @@ func New(s sender) *cliCommands {
 	rootCmd.AddCommand(list.New(s))
 	rootCmd.AddCommand(get.New(s))
 	rootCmd.AddCommand(create.New(s))
-	rootCmd.AddCommand(edit.New())
+	rootCmd.AddCommand(edit.New(s))
 	rootCmd.AddCommand(del.New(s))
 	rootCmd.AddCommand(gen.New())
 	return &cliCommands{

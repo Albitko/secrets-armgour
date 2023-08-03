@@ -17,10 +17,40 @@ type httpAPI interface {
 	ListSecrets(data string) (string, error)
 	GetSecret(secretType string, idx int) (string, error)
 	DeleteUserSecrets(secretType string, idx int) error
+	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error
+	EditText(index int, title, body, meta string) error
+	EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
+	EditBinary(index int, title, b64Content, meta string) error
 }
 
 type sender struct {
 	api httpAPI
+}
+
+func (s *sender) EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error {
+	err := s.api.EditCredentials(index, serviceName, serviceLogin, servicePassword, meta)
+	return err
+}
+
+func (s *sender) EditBinary(index int, title, dataPath, meta string) error {
+	content, err := os.ReadFile(dataPath)
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return err
+	}
+	b64Content := base64.StdEncoding.EncodeToString(content)
+	err = s.api.EditBinary(index, title, b64Content, meta)
+	return err
+}
+
+func (s *sender) EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
+	err := s.api.EditCard(index, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
+	return err
+}
+
+func (s *sender) EditText(index int, title, body, meta string) error {
+	err := s.api.EditText(index, title, body, meta)
+	return err
 }
 
 func (s *sender) DeleteUserSecrets(secretType string, idx int) error {
@@ -106,25 +136,21 @@ func (s *sender) CreateBinary(title, dataPath, meta string) error {
 		return err
 	}
 	b64Content := base64.StdEncoding.EncodeToString(content)
-	fmt.Println("Encoded Content:", b64Content)
 	err = s.api.CreateBinary(title, b64Content, meta)
 	return err
 }
 
 func (s *sender) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
-	fmt.Println(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
 	err := s.api.CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
 	return err
 }
 
 func (s *sender) CreateText(title, body, meta string) error {
-	fmt.Println(title, body, meta)
 	err := s.api.CreateText(title, body, meta)
 	return err
 }
 
 func (s *sender) CreateCredentials(serviceName, serviceLogin, servicePassword, meta string) error {
-	fmt.Println(serviceName, serviceLogin, servicePassword, meta)
 	err := s.api.SendCredentials(serviceName, serviceLogin, servicePassword, meta)
 	return err
 }

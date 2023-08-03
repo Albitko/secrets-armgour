@@ -1,34 +1,59 @@
 package cards
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-func New() *cobra.Command {
-	var id string
+type sender interface {
+	EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
+}
+
+func New(s sender) *cobra.Command {
+	var cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string
+	var index int
 	editCmd := &cobra.Command{
 		Use:   "cards",
-		Short: "Create user cards secrets",
+		Short: "Edit user cards secrets",
 		Run: func(cmd *cobra.Command, args []string) {
-			//c.sender.List
+			err := s.EditCard(index, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
+			if err != nil {
+				fmt.Println(err)
+			}
 		},
 	}
 	editCmd.PersistentFlags().StringVarP(
-		&id, "id", "i", "", "Secret ID")
-	err := editCmd.MarkPersistentFlagRequired("id")
+		&cardHolder, "holder", "l", "", "Card holder")
+	err := editCmd.MarkPersistentFlagRequired("holder")
 	if err != nil {
 		// TODO
 		return nil
 	}
 	editCmd.PersistentFlags().StringVarP(
-		&id, "holder", "l", "", "Card holder")
+		&cardNumber, "number", "n", "", "Card number")
+	err = editCmd.MarkPersistentFlagRequired("number")
+	if err != nil {
+		// TODO
+		return nil
+	}
 	editCmd.PersistentFlags().StringVarP(
-		&id, "number", "n", "", "Card number")
+		&cardValidityPeriod, "period", "p", "", "Card validity period")
+	err = editCmd.MarkPersistentFlagRequired("period")
+	if err != nil {
+		// TODO
+		return nil
+	}
 	editCmd.PersistentFlags().StringVarP(
-		&id, "period", "p", "", "Card validity period")
+		&cvcCode, "cvc", "c", "", "CVC code")
+	err = editCmd.MarkPersistentFlagRequired("cvc")
+	if err != nil {
+		// TODO
+		return nil
+	}
 	editCmd.PersistentFlags().StringVarP(
-		&id, "cvc", "c", "", "CVC code")
-	editCmd.PersistentFlags().StringVarP(
-		&id, "meta", "m", "", "Additional info about secret")
+		&meta, "meta", "m", "", "Additional info about secret")
+	editCmd.Flags().IntVarP(
+		&index, "index", "i", 0, "index")
 	return editCmd
 }

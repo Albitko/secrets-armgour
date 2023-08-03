@@ -43,8 +43,10 @@ func Run() {
 	router.POST("/v1/secrets/text", h.TextCreate)
 	router.POST("/v1/secrets/binary", h.BinaryCreate)
 	router.POST("/v1/secrets/card", h.CardCreate)
-
-	router.PUT("/v1/secrets/edit", h.Edit)
+	router.PUT("/v1/secrets/credentials/:id", h.CredentialsEdit)
+	router.PUT("/v1/secrets/text/:id", h.TextEdit)
+	router.PUT("/v1/secrets/binary/:id", h.BinaryEdit)
+	router.PUT("/v1/secrets/card/:id", h.CardEdit)
 
 	err = router.Run(appCfg.ServerAddr)
 	if err != nil {

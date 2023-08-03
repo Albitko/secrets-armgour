@@ -1,32 +1,45 @@
 package credentials
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-func New() *cobra.Command {
-	var id string
+type sender interface {
+	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error
+}
+
+func New(s sender) *cobra.Command {
+	var serviceName, serviceLogin, servicePassword, meta string
+	var index int
 	editCmd := &cobra.Command{
 		Use:   "credentials",
-		Short: "Save user credentials",
+		Short: "Edit user credentials",
 		Run: func(cmd *cobra.Command, args []string) {
-			//c.sender.List
+			err := s.EditCredentials(index, serviceName, serviceLogin, servicePassword, meta)
+			if err != nil {
+				fmt.Println(err)
+			}
 		},
 	}
 	editCmd.PersistentFlags().StringVarP(
-		&id, "id", "i", "", "Secret ID")
-	err := editCmd.MarkPersistentFlagRequired("id")
+		&serviceName, "service", "s", "", "Service name")
+	err := editCmd.MarkPersistentFlagRequired("service")
+
+	editCmd.PersistentFlags().StringVarP(
+		&serviceLogin, "login", "l", "", "Service login")
+	err = editCmd.MarkPersistentFlagRequired("login")
+	editCmd.PersistentFlags().StringVarP(
+		&servicePassword, "password", "p", "", "Service password")
+	err = editCmd.MarkPersistentFlagRequired("password")
+	editCmd.PersistentFlags().StringVarP(
+		&meta, "meta", "m", "", "Additional info about secret")
 	if err != nil {
 		// TODO
 		return nil
 	}
-	editCmd.PersistentFlags().StringVarP(
-		&id, "service", "s", "", "Service name")
-	editCmd.PersistentFlags().StringVarP(
-		&id, "login", "l", "", "Service login")
-	editCmd.PersistentFlags().StringVarP(
-		&id, "password", "p", "", "Service password")
-	editCmd.PersistentFlags().StringVarP(
-		&id, "meta", "m", "", "Additional info about secret")
+	editCmd.Flags().IntVarP(
+		&index, "index", "i", 0, "index")
 	return editCmd
 }
