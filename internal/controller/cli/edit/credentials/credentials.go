@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/Albitko/secrets-armgour/internal/utils/encrypt"
 )
 
 type sender interface {
@@ -17,7 +19,12 @@ func New(s sender) *cobra.Command {
 		Use:   "credentials",
 		Short: "Edit user credentials",
 		Run: func(cmd *cobra.Command, args []string) {
-			err := s.EditCredentials(index, serviceName, serviceLogin, servicePassword, meta)
+			key, _, err := encrypt.GetCliSecrets()
+			encName, err := encrypt.EncryptMessage([]byte(key), serviceName)
+			encLogin, err := encrypt.EncryptMessage([]byte(key), serviceLogin)
+			encPass, err := encrypt.EncryptMessage([]byte(key), servicePassword)
+			encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
+			err = s.EditCredentials(index, encName, encLogin, encPass, encMeta)
 			if err != nil {
 				fmt.Println(err)
 			}

@@ -22,7 +22,6 @@ func New(s sender) *cobra.Command {
 			encTitle, err := encrypt.EncryptMessage([]byte(key), title)
 			encBody, err := encrypt.EncryptMessage([]byte(key), body)
 			encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
-			fmt.Println("!!!!", key)
 			err = s.CreateText(encTitle, encBody, encMeta)
 			if err != nil {
 				fmt.Println(err)

@@ -40,7 +40,13 @@ func (s *sender) EditBinary(index int, title, dataPath, meta string) error {
 		return err
 	}
 	b64Content := base64.StdEncoding.EncodeToString(content)
-	err = s.api.EditBinary(index, title, b64Content, meta)
+
+	key, _, err := encrypt.GetCliSecrets()
+	encTitle, err := encrypt.EncryptMessage([]byte(key), title)
+	encContent, err := encrypt.EncryptMessage([]byte(key), b64Content)
+	encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
+
+	err = s.api.EditBinary(index, encTitle, encContent, encMeta)
 	return err
 }
 
