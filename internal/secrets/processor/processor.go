@@ -14,10 +14,21 @@ type repository interface {
 	InsertText(text entity.UserText) error
 
 	SelectUserData(data string) (interface{}, error)
+	GetUserData(data, id string) (interface{}, error)
 }
 
 type processor struct {
 	repo repository
+}
+
+func (p processor) GetUserData(data, id string) (interface{}, error) {
+	res, err := p.repo.GetUserData(data, id)
+	if data == "binary" {
+		binRes := res.(entity.UserBinary)
+		binRes.B64Content = base64.StdEncoding.EncodeToString([]byte(binRes.B64Content))
+		res = binRes
+	}
+	return res, err
 }
 
 func (p processor) ListUserData(data string) (interface{}, error) {

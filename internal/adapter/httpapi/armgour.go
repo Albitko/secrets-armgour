@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/go-resty/resty/v2"
 
@@ -11,6 +12,11 @@ import (
 type httpAPI struct {
 	armgourURL string
 	client     *resty.Client
+}
+
+func (a *httpAPI) GetSecret(secretType string, idx int) (string, error) {
+	resp, err := a.client.R().Get(a.armgourURL + "/v1/secrets/get/" + secretType + "/" + strconv.Itoa(idx))
+	return resp.String(), err
 }
 
 func (a *httpAPI) ListSecrets(data string) (string, error) {

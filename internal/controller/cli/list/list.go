@@ -9,7 +9,7 @@ import (
 )
 
 type sender interface {
-	GetUserSecrets(data string) (interface{}, error)
+	ListUserSecrets(data string) (interface{}, error)
 }
 
 func New(s sender) *cobra.Command {
@@ -18,7 +18,7 @@ func New(s sender) *cobra.Command {
 		Use:   "list",
 		Short: "List user saved secrets",
 		Run: func(cmd *cobra.Command, args []string) {
-			res, err := s.GetUserSecrets(data)
+			res, err := s.ListUserSecrets(data)
 			if err != nil {
 				fmt.Println(err)
 			}

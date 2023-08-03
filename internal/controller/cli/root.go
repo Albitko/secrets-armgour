@@ -23,7 +23,8 @@ type sender interface {
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 	CreateBinary(title, dataPath, meta string) error
 
-	GetUserSecrets(data string) (interface{}, error)
+	ListUserSecrets(data string) (interface{}, error)
+	GetUserSecrets(secretType string, idx int) (interface{}, error)
 }
 
 type cliCommands struct {
@@ -58,7 +59,7 @@ func New(s sender) *cliCommands {
 	rootCmd.AddCommand(logout.New())
 	rootCmd.AddCommand(register.New())
 	rootCmd.AddCommand(list.New(s))
-	rootCmd.AddCommand(get.New())
+	rootCmd.AddCommand(get.New(s))
 	rootCmd.AddCommand(create.New(s))
 	rootCmd.AddCommand(edit.New())
 	rootCmd.AddCommand(del.New())

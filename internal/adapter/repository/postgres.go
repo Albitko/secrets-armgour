@@ -60,6 +60,133 @@ type postgres struct {
 	db *sql.DB
 }
 
+func (d *postgres) GetUserData(data, id string) (interface{}, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var res interface{}
+
+	switch data {
+	case "credentials":
+		var credential entity.UserCredentials
+		query := `
+		select service,service_login,service_password,meta  from credentials_data where id = $1;
+		`
+		getSecret, err := d.db.PrepareContext(
+			ctx, query,
+		)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error prepare context %s", err.Error(),
+			)
+			return "", err
+		}
+		defer getSecret.Close()
+
+		err = getSecret.QueryRowContext(ctx, id).Scan(
+			&credential.ServiceName,
+			&credential.ServiceLogin,
+			&credential.ServicePassword,
+			&credential.Meta,
+		)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error query execution %s", err.Error(),
+			)
+			return "", err
+		}
+		res = credential
+	case "binary":
+		var bin entity.UserBinary
+		query := `
+		select title,data_content,meta  from binary_data where id = $1;
+		`
+		getSecret, err := d.db.PrepareContext(
+			ctx, query,
+		)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error prepare context %s", err.Error(),
+			)
+			return "", err
+		}
+		defer getSecret.Close()
+
+		err = getSecret.QueryRowContext(ctx, id).Scan(
+			&bin.Title,
+			&bin.B64Content,
+			&bin.Meta,
+		)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error query execution %s", err.Error(),
+			)
+			return "", err
+		}
+		res = bin
+
+	case "text":
+		var text entity.UserText
+		query := `
+		select title,note,meta  from text_data where id = $1;
+		`
+		getSecret, err := d.db.PrepareContext(
+			ctx, query,
+		)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error prepare context %s", err.Error(),
+			)
+			return "", err
+		}
+		defer getSecret.Close()
+
+		err = getSecret.QueryRowContext(ctx, id).Scan(
+			&text.Title,
+			&text.Body,
+			&text.Meta,
+		)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error query execution %s", err.Error(),
+			)
+			return "", err
+		}
+		res = text
+	case "card":
+		var card entity.UserCard
+		query := `
+		select card_holder,card_number,card_validity_period,cvc_code,meta  from cards_data where id = $1;
+		`
+		getSecret, err := d.db.PrepareContext(
+			ctx, query,
+		)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error prepare context %s", err.Error(),
+			)
+			return "", err
+		}
+		defer getSecret.Close()
+
+		err = getSecret.QueryRowContext(ctx, id).Scan(
+			&card.CardHolder,
+			&card.CardNumber,
+			&card.CardValidityPeriod,
+			&card.CvcCode,
+			&card.Meta,
+		)
+		if err != nil {
+			logger.Zap.Errorf(
+				"error query execution %s", err.Error(),
+			)
+			return "", err
+		}
+		res = card
+	}
+
+	return res, nil
+}
+
 func closeRows(row *sql.Rows) {
 	err := row.Close()
 	if err != nil {

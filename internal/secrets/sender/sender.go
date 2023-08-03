@@ -15,13 +15,50 @@ type httpAPI interface {
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 	CreateBinary(title, b64Content, meta string) error
 	ListSecrets(data string) (string, error)
+	GetSecret(secretType string, idx int) (string, error)
 }
 
 type sender struct {
 	api httpAPI
 }
 
-func (s *sender) GetUserSecrets(data string) (interface{}, error) {
+func (s *sender) GetUserSecrets(secretType string, idx int) (interface{}, error) {
+	resp, err := s.api.GetSecret(secretType, idx)
+	var res interface{}
+	switch secretType {
+	case "credentials":
+		var cred entity.UserCredentials
+		err = json.Unmarshal([]byte(resp), &cred)
+		if err != nil {
+			return cred, err
+		}
+		res = cred
+	case "binary":
+		var bin entity.UserBinary
+		err = json.Unmarshal([]byte(resp), &bin)
+		if err != nil {
+			return bin, err
+		}
+		res = bin
+	case "text":
+		var text entity.UserText
+		err = json.Unmarshal([]byte(resp), &text)
+		if err != nil {
+			return text, err
+		}
+		res = text
+	case "card":
+		var card entity.UserCard
+		err = json.Unmarshal([]byte(resp), &card)
+		if err != nil {
+			return card, err
+		}
+		res = card
+	}
+	return res, err
+}
+
+func (s *sender) ListUserSecrets(data string) (interface{}, error) {
 	resp, err := s.api.ListSecrets(data)
 	var res interface{}
 	switch data {

@@ -35,8 +35,8 @@ func Run() {
 	router.GET("/v1/user/login", h.Login)
 	router.GET("/v1/user/logout", h.Logout)
 	router.GET("/v1/user/register", h.Register)
-	router.GET("/v1/secrets/get", h.Get)
 
+	router.GET("/v1/secrets/get/:data/:id", h.Get)
 	router.GET("/v1/secrets/list/:data", h.List)
 
 	router.POST("/v1/secrets/credentials/create", h.CredentialsCreate)
@@ -46,7 +46,6 @@ func Run() {
 
 	router.PUT("/v1/secrets/edit", h.Edit)
 	router.DELETE("/v1/secrets/del", h.Delete)
-	router.GET("/v1/secrets/generate_password", h.GeneratePassword)
 
 	err = router.Run(appCfg.ServerAddr)
 	if err != nil {

@@ -17,6 +17,7 @@ type secretsProcessor interface {
 	CredentialsCreation(text entity.UserCredentials) error
 
 	ListUserData(data string) (interface{}, error)
+	GetUserData(data, id string) (interface{}, error)
 }
 
 type handler struct {
@@ -60,7 +61,28 @@ func (h *handler) List(ctx *gin.Context) {
 }
 
 func (h *handler) Get(ctx *gin.Context) {
-
+	data := ctx.Param("data")
+	id := ctx.Param("id")
+	res, err := h.processor.GetUserData(data, id)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	switch data {
+	case "credentials":
+		fmt.Println(res)
+		res = res.([]entity.UserCredentials)
+	case "binary":
+		fmt.Println(res)
+		res = res.([]entity.UserBinary)
+	case "text":
+		fmt.Println(res)
+		res = res.([]entity.UserText)
+	case "card":
+		fmt.Println(res)
+		res = res.([]entity.UserCard)
+	}
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (h *handler) GeneratePassword(ctx *gin.Context) {
