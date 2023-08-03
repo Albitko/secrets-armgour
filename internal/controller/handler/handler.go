@@ -70,17 +70,13 @@ func (h *handler) Get(ctx *gin.Context) {
 	}
 	switch data {
 	case "credentials":
-		fmt.Println(res)
-		res = res.([]entity.UserCredentials)
+		res = res.(entity.UserCredentials)
 	case "binary":
-		fmt.Println(res)
-		res = res.([]entity.UserBinary)
+		res = res.(entity.UserBinary)
 	case "text":
-		fmt.Println(res)
-		res = res.([]entity.UserText)
+		res = res.(entity.UserText)
 	case "card":
-		fmt.Println(res)
-		res = res.([]entity.UserCard)
+		res = res.(entity.UserCard)
 	}
 	ctx.JSON(http.StatusOK, res)
 }
