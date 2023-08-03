@@ -16,10 +16,15 @@ type httpAPI interface {
 	CreateBinary(title, b64Content, meta string) error
 	ListSecrets(data string) (string, error)
 	GetSecret(secretType string, idx int) (string, error)
+	DeleteUserSecrets(secretType string, idx int) error
 }
 
 type sender struct {
 	api httpAPI
+}
+
+func (s *sender) DeleteUserSecrets(secretType string, idx int) error {
+	return s.api.DeleteUserSecrets(secretType, idx)
 }
 
 func (s *sender) GetUserSecrets(secretType string, idx int) (interface{}, error) {

@@ -18,6 +18,7 @@ type secretsProcessor interface {
 
 	ListUserData(data string) (interface{}, error)
 	GetUserData(data, id string) (interface{}, error)
+	DeleteUserData(data, id string) error
 }
 
 type handler struct {
@@ -96,8 +97,6 @@ func (h *handler) CredentialsCreate(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(credentials)
-
 }
 
 func (h *handler) Edit(ctx *gin.Context) {
@@ -105,7 +104,13 @@ func (h *handler) Edit(ctx *gin.Context) {
 }
 
 func (h *handler) Delete(ctx *gin.Context) {
-
+	data := ctx.Param("data")
+	id := ctx.Param("id")
+	err := h.processor.DeleteUserData(data, id)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *handler) TextCreate(ctx *gin.Context) {

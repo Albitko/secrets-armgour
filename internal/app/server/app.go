@@ -38,14 +38,13 @@ func Run() {
 
 	router.GET("/v1/secrets/get/:data/:id", h.Get)
 	router.GET("/v1/secrets/list/:data", h.List)
-
-	router.POST("/v1/secrets/credentials/create", h.CredentialsCreate)
-	router.POST("/v1/secrets/text/create", h.TextCreate)
-	router.POST("/v1/secrets/binary/create", h.BinaryCreate)
-	router.POST("/v1/secrets/card/create", h.CardCreate)
+	router.DELETE("/v1/secrets/:data/:id", h.Delete)
+	router.POST("/v1/secrets/credentials", h.CredentialsCreate)
+	router.POST("/v1/secrets/text", h.TextCreate)
+	router.POST("/v1/secrets/binary", h.BinaryCreate)
+	router.POST("/v1/secrets/card", h.CardCreate)
 
 	router.PUT("/v1/secrets/edit", h.Edit)
-	router.DELETE("/v1/secrets/del", h.Delete)
 
 	err = router.Run(appCfg.ServerAddr)
 	if err != nil {

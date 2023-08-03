@@ -18,7 +18,7 @@ func New() *cobra.Command {
 				fmt.Println("Error removing file:", err)
 				return
 			}
-			fmt.Println("File removed successfully.")
+			fmt.Println("Logout successfully.")
 		},
 	}
 	return logoutCmd

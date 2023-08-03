@@ -15,13 +15,19 @@ type repository interface {
 
 	SelectUserData(data string) (interface{}, error)
 	GetUserData(data, id string) (interface{}, error)
+	DeleteUserData(data, id string) error
 }
 
 type processor struct {
 	repo repository
 }
 
-func (p processor) GetUserData(data, id string) (interface{}, error) {
+func (p *processor) DeleteUserData(data, id string) error {
+	err := p.repo.DeleteUserData(data, id)
+	return err
+}
+
+func (p *processor) GetUserData(data, id string) (interface{}, error) {
 	res, err := p.repo.GetUserData(data, id)
 	if data == "binary" {
 		binRes := res.(entity.UserBinary)
@@ -31,12 +37,12 @@ func (p processor) GetUserData(data, id string) (interface{}, error) {
 	return res, err
 }
 
-func (p processor) ListUserData(data string) (interface{}, error) {
+func (p *processor) ListUserData(data string) (interface{}, error) {
 	res, err := p.repo.SelectUserData(data)
 	return res, err
 }
 
-func (p processor) BinaryCreation(binary entity.UserBinary) error {
+func (p *processor) BinaryCreation(binary entity.UserBinary) error {
 	decodedContent, err := base64.StdEncoding.DecodeString(binary.B64Content)
 	if err != nil {
 		fmt.Println("Error decoding content:", err)
@@ -46,17 +52,17 @@ func (p processor) BinaryCreation(binary entity.UserBinary) error {
 	return err
 }
 
-func (p processor) TextCreation(text entity.UserText) error {
+func (p *processor) TextCreation(text entity.UserText) error {
 	err := p.repo.InsertText(text)
 	return err
 }
 
-func (p processor) CredentialsCreation(credentials entity.UserCredentials) error {
+func (p *processor) CredentialsCreation(credentials entity.UserCredentials) error {
 	err := p.repo.InsertCredentials(credentials)
 	return err
 }
 
-func (p processor) CardCreation(card entity.UserCard) error {
+func (p *processor) CardCreation(card entity.UserCard) error {
 	err := p.repo.InsertCard(card)
 	return err
 }

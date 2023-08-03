@@ -14,6 +14,11 @@ type httpAPI struct {
 	client     *resty.Client
 }
 
+func (a *httpAPI) DeleteUserSecrets(secretType string, idx int) error {
+	_, err := a.client.R().Delete(a.armgourURL + "/v1/secrets/" + secretType + "/" + strconv.Itoa(idx))
+	return err
+}
+
 func (a *httpAPI) GetSecret(secretType string, idx int) (string, error) {
 	resp, err := a.client.R().Get(a.armgourURL + "/v1/secrets/get/" + secretType + "/" + strconv.Itoa(idx))
 	return resp.String(), err
@@ -30,7 +35,7 @@ func (a *httpAPI) CreateBinary(title, b64Content, meta string) error {
 		B64Content: b64Content,
 		Meta:       meta,
 	}
-	resp, err := a.client.R().SetBody(binary).Post(a.armgourURL + "/v1/secrets/binary/create")
+	resp, err := a.client.R().SetBody(binary).Post(a.armgourURL + "/v1/secrets/binary")
 	fmt.Println(resp.String())
 	return err
 }
@@ -42,7 +47,7 @@ func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, me
 		ServicePassword: servicePassword,
 		Meta:            meta,
 	}
-	resp, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/secrets/credentials/create")
+	resp, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/secrets/credentials")
 	fmt.Println(resp.String())
 	return err
 }
@@ -53,7 +58,7 @@ func (a *httpAPI) CreateText(title, body, meta string) error {
 		Body:  body,
 		Meta:  meta,
 	}
-	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/text/create")
+	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/text")
 	fmt.Println(resp.String())
 	return err
 }
@@ -66,7 +71,7 @@ func (a *httpAPI) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode
 		CvcCode:            cvcCode,
 		Meta:               meta,
 	}
-	resp, err := a.client.R().SetBody(card).Post(a.armgourURL + "/v1/secrets/card/create")
+	resp, err := a.client.R().SetBody(card).Post(a.armgourURL + "/v1/secrets/card")
 	fmt.Println(resp.String())
 	return err
 }

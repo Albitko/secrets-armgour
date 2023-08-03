@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -58,6 +59,45 @@ const schema = `
 
 type postgres struct {
 	db *sql.DB
+}
+
+func (d *postgres) DeleteUserData(data, id string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	var query string
+	switch data {
+	case "credentials":
+		query = `delete from credentials_data where id = $1`
+	case "binary":
+		query = `delete from binary_data where id = $1`
+	case "text":
+		query = `delete from text_data where id = $1`
+	case "card":
+		query = `delete from cards_data where id = $1`
+	}
+	defer cancel()
+	delStmnt, err := d.db.PrepareContext(
+		ctx,
+		query,
+	)
+	if err != nil {
+		logger.Zap.Errorf("error: %s preparing statement", err.Error())
+		return err
+	}
+	defer closeStatement(delStmnt)
+	intId, err := strconv.Atoi(id)
+	if err != nil {
+		logger.Zap.Errorf("error: %s converting string to int", err.Error())
+		return err
+	}
+	_, err = delStmnt.ExecContext(
+		ctx,
+		intId,
+	)
+	if err != nil {
+		logger.Zap.Errorf("error: %s write text data", err.Error())
+		return err
+	}
+	return nil
 }
 
 func (d *postgres) GetUserData(data, id string) (interface{}, error) {
