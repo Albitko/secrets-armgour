@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/Albitko/secrets-armgour/internal/utils/encrypt"
 )
 
 type sender interface {
@@ -16,7 +18,13 @@ func New(s sender) *cobra.Command {
 		Use:   "cards",
 		Short: "Create user cards secrets",
 		Run: func(cmd *cobra.Command, args []string) {
-			err := s.CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
+			key, _, err := encrypt.GetCliSecrets()
+			encHolder, err := encrypt.EncryptMessage([]byte(key), cardHolder)
+			encNumber, err := encrypt.EncryptMessage([]byte(key), cardNumber)
+			encPeriod, err := encrypt.EncryptMessage([]byte(key), cardValidityPeriod)
+			encCvc, err := encrypt.EncryptMessage([]byte(key), cvcCode)
+			encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
+			err = s.CreateCard(encHolder, encNumber, encPeriod, encCvc, encMeta)
 			if err != nil {
 				fmt.Println(err)
 			}

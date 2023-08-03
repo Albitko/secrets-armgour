@@ -45,7 +45,7 @@ const schema = `
  		card_holder text,
  		card_number text,
  		card_validity_period text,
- 		cvc_code smallint,
+ 		cvc_code text,
 		meta text,
  	    created_at timestamp
  	);

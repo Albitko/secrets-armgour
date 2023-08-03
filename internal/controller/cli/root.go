@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -15,6 +16,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/login"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/logout"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/register"
+	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
 type sender interface {
@@ -33,13 +35,12 @@ type sender interface {
 }
 
 type cliCommands struct {
-	isAuth bool
-	s      sender
-	Cmd    *cobra.Command
+	s   sender
+	Cmd *cobra.Command
 }
 
 func New(s sender) *cliCommands {
-	isAuth := false
+	var cliSecrets entity.CliSecrets
 	rootCmd := &cobra.Command{
 		Use:   "armgour-cli",
 		Short: "Client for storing your secrets in armGOur service",
@@ -55,11 +56,14 @@ func New(s sender) *cliCommands {
 				}
 				return
 			}
-			fmt.Println("isAuth", isAuth, content)
+			err = json.Unmarshal(content, &cliSecrets)
+			fmt.Println("TEST")
+			fmt.Println(cliSecrets)
+
 			// or check if token expired
-			isAuth = true
 		},
 	}
+
 	rootCmd.AddCommand(login.New())
 	rootCmd.AddCommand(logout.New())
 	rootCmd.AddCommand(register.New())
@@ -70,8 +74,7 @@ func New(s sender) *cliCommands {
 	rootCmd.AddCommand(del.New(s))
 	rootCmd.AddCommand(gen.New())
 	return &cliCommands{
-		s:      s,
-		Cmd:    rootCmd,
-		isAuth: isAuth,
+		s:   s,
+		Cmd: rootCmd,
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/Albitko/secrets-armgour/internal/entity"
+	"github.com/Albitko/secrets-armgour/internal/utils/encrypt"
 )
 
 type httpAPI interface {
@@ -136,7 +137,11 @@ func (s *sender) CreateBinary(title, dataPath, meta string) error {
 		return err
 	}
 	b64Content := base64.StdEncoding.EncodeToString(content)
-	err = s.api.CreateBinary(title, b64Content, meta)
+	key, _, err := encrypt.GetCliSecrets()
+	encTitle, err := encrypt.EncryptMessage([]byte(key), title)
+	encContent, err := encrypt.EncryptMessage([]byte(key), b64Content)
+	encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
+	err = s.api.CreateBinary(encTitle, encContent, encMeta)
 	return err
 }
 

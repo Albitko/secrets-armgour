@@ -1,11 +1,13 @@
 package get
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/spf13/cobra"
 
 	"github.com/Albitko/secrets-armgour/internal/entity"
+	"github.com/Albitko/secrets-armgour/internal/utils/encrypt"
 )
 
 type sender interface {
@@ -26,17 +28,56 @@ func New(s sender) *cobra.Command {
 			switch data {
 			case "credentials":
 				credentials := secrets.(entity.UserCredentials)
-				fmt.Println(credentials)
+				key, _, err := encrypt.GetCliSecrets()
+				decMeta, err := encrypt.DecryptMessage([]byte(key), credentials.Meta)
+				decService, err := encrypt.DecryptMessage([]byte(key), credentials.ServiceName)
+				decLogin, err := encrypt.DecryptMessage([]byte(key), credentials.ServiceLogin)
+				decPass, err := encrypt.DecryptMessage([]byte(key), credentials.ServicePassword)
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Println(decMeta, decService, decLogin, decPass)
 			case "binary":
 				bin := secrets.(entity.UserBinary)
-				fmt.Println(bin)
+				key, _, err := encrypt.GetCliSecrets()
+				decMeta, err := encrypt.DecryptMessage([]byte(key), bin.Meta)
+				decTitle, err := encrypt.DecryptMessage([]byte(key), bin.Title)
+				decContent, err := encrypt.DecryptMessage([]byte(key), bin.B64Content)
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Println(decTitle, decContent, decMeta)
 				fmt.Println("Binary saved in .. with name ..")
+				rawDecodedText, err := base64.StdEncoding.DecodeString(decContent)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Println(string(rawDecodedText))
 			case "text":
 				text := secrets.(entity.UserText)
-				fmt.Println(text)
+
+				key, _, err := encrypt.GetCliSecrets()
+				decMeta, err := encrypt.DecryptMessage([]byte(key), text.Meta)
+				decTitle, err := encrypt.DecryptMessage([]byte(key), text.Title)
+				decBody, err := encrypt.DecryptMessage([]byte(key), text.Body)
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Println(decTitle, decBody, decMeta)
 			case "card":
 				card := secrets.(entity.UserCard)
-				fmt.Println(card)
+
+				key, _, err := encrypt.GetCliSecrets()
+				holderDec, err := encrypt.DecryptMessage([]byte(key), card.CardHolder)
+				numberDec, err := encrypt.DecryptMessage([]byte(key), card.CardNumber)
+				periodDec, err := encrypt.DecryptMessage([]byte(key), card.CardValidityPeriod)
+				cvcDec, err := encrypt.DecryptMessage([]byte(key), card.CvcCode)
+				metaDec, err := encrypt.DecryptMessage([]byte(key), card.Meta)
+
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Println(holderDec, numberDec, periodDec, cvcDec, metaDec)
 			}
 		},
 	}
