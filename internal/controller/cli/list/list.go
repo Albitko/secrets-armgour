@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/Albitko/secrets-armgour/internal/entity"
+	"github.com/Albitko/secrets-armgour/internal/utils/encrypt"
 )
 
 type sender interface {
@@ -26,22 +27,48 @@ func New(s sender) *cobra.Command {
 			case "credentials":
 				credentials := res.([]entity.CutCredentials)
 				for _, c := range credentials {
-					fmt.Println(c.Id, c.ServiceName, c.Meta)
+					key, _, err := encrypt.GetCliSecrets()
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
+					decMeta, err := encrypt.DecryptMessage([]byte(key), c.Meta)
+					decService, err := encrypt.DecryptMessage([]byte(key), c.ServiceName)
+					fmt.Println(c.Id, decService, decMeta)
 				}
 			case "binary":
 				bin := res.([]entity.CutBinary)
 				for _, b := range bin {
-					fmt.Println(b.Id, b.Title, b.Meta)
+					key, _, err := encrypt.GetCliSecrets()
+					decMeta, err := encrypt.DecryptMessage([]byte(key), b.Meta)
+					decTitle, err := encrypt.DecryptMessage([]byte(key), b.Title)
+					if err != nil {
+						fmt.Println(err)
+					}
+					fmt.Println(b.Id, decTitle, decMeta)
 				}
 			case "text":
 				texts := res.([]entity.CutText)
 				for _, t := range texts {
-					fmt.Println(t.Id, t.Title, t.Meta)
+					key, _, err := encrypt.GetCliSecrets()
+					decMeta, err := encrypt.DecryptMessage([]byte(key), t.Meta)
+					decTitle, err := encrypt.DecryptMessage([]byte(key), t.Title)
+					if err != nil {
+						fmt.Println(err)
+					}
+					fmt.Println(t.Id, decTitle, decMeta)
 				}
 			case "card":
 				cards := res.([]entity.CutCard)
 				for _, c := range cards {
-					fmt.Println(c.Id, c.CardNumber, c.Meta)
+					key, _, err := encrypt.GetCliSecrets()
+					numberDec, err := encrypt.DecryptMessage([]byte(key), c.CardNumber)
+					metaDec, err := encrypt.DecryptMessage([]byte(key), c.Meta)
+
+					if err != nil {
+						fmt.Println(err)
+					}
+					fmt.Println(c.Id, numberDec, metaDec)
 				}
 			}
 		},
