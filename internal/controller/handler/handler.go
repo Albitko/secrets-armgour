@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -40,6 +41,10 @@ func (h *handler) Login(ctx *gin.Context) {
 		return
 	}
 	err := h.processor.LoginUser(auth)
+	if errors.Is(err, entity.ErrInvalidCredentials) {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
@@ -57,6 +62,10 @@ func (h *handler) Register(ctx *gin.Context) {
 		return
 	}
 	err := h.processor.RegisterUser(auth)
+	if errors.Is(err, entity.ErrLoginAlreadyInUse) {
+		ctx.AbortWithStatus(http.StatusConflict)
+		return
+	}
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return

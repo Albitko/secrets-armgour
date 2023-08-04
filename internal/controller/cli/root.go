@@ -60,7 +60,6 @@ func New(s sender) *cliCommands {
 				return
 			}
 			err = json.Unmarshal(content, &cliSecrets)
-			fmt.Println("TEST")
 			fmt.Println(cliSecrets)
 
 			// or check if token expired

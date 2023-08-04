@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -23,6 +24,10 @@ func New(s sender) *cobra.Command {
 		Short: "Login to armGOur service",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := s.LoginUser(login, password)
+			if errors.Is(err, entity.ErrInvalidCredentials) {
+				fmt.Println("Invalid credentials")
+				return
+			}
 			if err != nil {
 				fmt.Println(err)
 			}

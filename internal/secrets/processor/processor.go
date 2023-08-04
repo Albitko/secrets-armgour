@@ -40,16 +40,9 @@ func (p *processor) LoginUser(auth entity.UserAuth) error {
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(auth.Password))
 	if err == nil {
-		fmt.Println("PASSWORDSMATCH")
-		// Passwords match
+		return nil
 	} else if err == bcrypt.ErrMismatchedHashAndPassword {
-		fmt.Println("PASSWORD FAILS!")
-
-		// Passwords do not match
-	} else {
-		// Handle error
-		fmt.Println("ERRR ", err)
-
+		return entity.ErrInvalidCredentials
 	}
 	return err
 }

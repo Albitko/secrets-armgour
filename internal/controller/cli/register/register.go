@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -24,6 +25,10 @@ func New(s sender) *cobra.Command {
 		Short: "Register in armGOur service",
 		Run: func(cmd *cobra.Command, args []string) {
 			err := s.RegisterUser(login, password)
+			if errors.Is(err, entity.ErrLoginAlreadyInUse) {
+				fmt.Println("This login already in use. Try another login")
+				return
+			}
 			if err != nil {
 				fmt.Println(err)
 			}

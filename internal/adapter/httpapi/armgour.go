@@ -19,7 +19,10 @@ func (a *httpAPI) LoginUser(login, password string) error {
 		Login:    login,
 		Password: password,
 	}
-	_, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/user/login")
+	resp, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/user/login")
+	if resp.StatusCode() == 401 {
+		return entity.ErrInvalidCredentials
+	}
 	return err
 }
 
@@ -28,7 +31,10 @@ func (a *httpAPI) RegisterUser(login, password string) error {
 		Login:    login,
 		Password: password,
 	}
-	_, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/user/register")
+	resp, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/user/register")
+	if resp.StatusCode() == 409 {
+		return entity.ErrLoginAlreadyInUse
+	}
 	return err
 }
 

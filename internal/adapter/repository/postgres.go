@@ -3,10 +3,12 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/Albitko/secrets-armgour/internal/entity"
@@ -51,11 +53,14 @@ const schema = `
  	);
 	CREATE TABLE IF NOT EXISTS users_data (
  	    id serial primary key,
-		user_login text,
+		user_login text not null unique,
  		password_hash text,
  	    created_at timestamp
  	);
 `
+const (
+	uniqueViolationErr = "23505"
+)
 
 type postgres struct {
 	db *sql.DB
@@ -87,6 +92,7 @@ func (d *postgres) GetUserPasswordHash(login string) (string, error) {
 }
 
 func (d *postgres) RegisterUser(login, pass string) error {
+	var pgErr *pgconn.PgError
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -107,9 +113,14 @@ func (d *postgres) RegisterUser(login, pass string) error {
 		pass,
 		createdAt,
 	)
-	if err != nil {
-		logger.Zap.Errorf("error: %s write user auth data", err.Error())
-		return err
+	if err != nil && errors.As(err, &pgErr) {
+		if pgErr.Code == uniqueViolationErr {
+			logger.Zap.Info("login in use")
+			return entity.ErrLoginAlreadyInUse
+		} else {
+			logger.Zap.Errorf("error: %s write user auth data", err.Error())
+			return err
+		}
 	}
 	return nil
 }
