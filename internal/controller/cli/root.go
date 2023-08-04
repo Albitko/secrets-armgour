@@ -10,7 +10,6 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/create"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/del"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/edit"
-	"github.com/Albitko/secrets-armgour/internal/controller/cli/gen"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/get"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/list"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/login"
@@ -48,8 +47,6 @@ func New(s sender) *cliCommands {
 		Use:   "armgour-cli",
 		Short: "Client for storing your secrets in armGOur service",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			// TODO mock token check
-			// check if no token
 			content, err := os.ReadFile(".token")
 			if err != nil {
 				if os.IsNotExist(err) {
@@ -60,9 +57,6 @@ func New(s sender) *cliCommands {
 				return
 			}
 			err = json.Unmarshal(content, &cliSecrets)
-			fmt.Println(cliSecrets)
-
-			// or check if token expired
 		},
 	}
 
@@ -74,7 +68,6 @@ func New(s sender) *cliCommands {
 	rootCmd.AddCommand(create.New(s))
 	rootCmd.AddCommand(edit.New(s))
 	rootCmd.AddCommand(del.New(s))
-	rootCmd.AddCommand(gen.New())
 	return &cliCommands{
 		s:   s,
 		Cmd: rootCmd,
