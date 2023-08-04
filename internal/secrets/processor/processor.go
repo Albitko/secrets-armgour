@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
@@ -23,15 +25,41 @@ type repository interface {
 	GetUserData(data, id string) (interface{}, error)
 	DeleteUserData(data, id string) error
 
-	RegisterUser(auth entity.UserAuth) error
+	RegisterUser(login, pass string) error
+	GetUserPasswordHash(login string) (string, error)
 }
 
 type processor struct {
 	repo repository
 }
 
+func (p *processor) LoginUser(auth entity.UserAuth) error {
+	storedHash, err := p.repo.GetUserPasswordHash(auth.Login)
+	if err != nil {
+		return err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(auth.Password))
+	if err == nil {
+		fmt.Println("PASSWORDSMATCH")
+		// Passwords match
+	} else if err == bcrypt.ErrMismatchedHashAndPassword {
+		fmt.Println("PASSWORD FAILS!")
+
+		// Passwords do not match
+	} else {
+		// Handle error
+		fmt.Println("ERRR ", err)
+
+	}
+	return err
+}
+
 func (p *processor) RegisterUser(auth entity.UserAuth) error {
-	err := p.repo.RegisterUser(auth)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(auth.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	err = p.repo.RegisterUser(auth.Login, string(hashedPassword))
 	return err
 }
 

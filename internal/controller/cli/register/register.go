@@ -33,10 +33,10 @@ func New(s sender) *cobra.Command {
 			encKey := hex.EncodeToString(hasher.Sum(nil))[:16]
 
 			data := entity.CliSecrets{
-				Token: "TESTTOKEN",
-				Key:   encKey,
+				UserName: login,
+				Token:    "TESTTOKEN",
+				Key:      encKey,
 			}
-			fmt.Println(encKey)
 			jsonData, err := json.Marshal(data)
 			if err != nil {
 				fmt.Printf("could not marshal json: %s\n", err)

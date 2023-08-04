@@ -61,34 +61,56 @@ type postgres struct {
 	db *sql.DB
 }
 
-func (d *postgres) RegisterUser(auth entity.UserAuth) error {
-	//now := time.Now()
-	//createdAt := now.Format("2006-01-02T15:04")
-	//ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	//defer cancel()
-	//insertCard, err := d.db.PrepareContext(
-	//	ctx,
-	//	"INSERT INTO cards_data (card_holder, card_number, card_validity_period, cvc_code, meta, created_at) VALUES ($1, $2, $3, $4, $5, $6);",
-	//)
-	//if err != nil {
-	//	logger.Zap.Errorf("error: %s preparing statement", err.Error())
-	//	return err
-	//}
-	//defer closeStatement(insertCard)
-	//
-	//_, err = insertCard.ExecContext(
-	//	ctx,
-	//	card.CardHolder,
-	//	card.CardNumber,
-	//	card.CardValidityPeriod,
-	//	card.CvcCode,
-	//	card.Meta,
-	//	createdAt,
-	//)
-	//if err != nil {
-	//	logger.Zap.Errorf("error: %s write card data", err.Error())
-	//	return err
-	//}
+func (d *postgres) GetUserPasswordHash(login string) (string, error) {
+	var passHash string
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	getSecret, err := d.db.PrepareContext(
+		ctx, `select password_hash from users_data where user_login = $1;`,
+	)
+	if err != nil {
+		logger.Zap.Errorf(
+			"error prepare context %s", err.Error(),
+		)
+		return "", err
+	}
+	defer getSecret.Close()
+
+	err = getSecret.QueryRowContext(ctx, login).Scan(&passHash)
+	if err != nil {
+		logger.Zap.Errorf(
+			"error query execution %s", err.Error(),
+		)
+		return "", err
+	}
+	return passHash, nil
+}
+
+func (d *postgres) RegisterUser(login, pass string) error {
+	now := time.Now()
+	createdAt := now.Format("2006-01-02T15:04")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	insertCard, err := d.db.PrepareContext(
+		ctx,
+		"INSERT INTO users_data (user_login, password_hash, created_at) VALUES ($1, $2, $3);",
+	)
+	if err != nil {
+		logger.Zap.Errorf("error: %s preparing statement", err.Error())
+		return err
+	}
+	defer closeStatement(insertCard)
+
+	_, err = insertCard.ExecContext(
+		ctx,
+		login,
+		pass,
+		createdAt,
+	)
+	if err != nil {
+		logger.Zap.Errorf("error: %s write user auth data", err.Error())
+		return err
+	}
 	return nil
 }
 

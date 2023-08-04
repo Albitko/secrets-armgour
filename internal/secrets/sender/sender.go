@@ -24,10 +24,16 @@ type httpAPI interface {
 	EditBinary(index int, title, b64Content, meta string) error
 
 	RegisterUser(login, password string) error
+	LoginUser(login, password string) error
 }
 
 type sender struct {
 	api httpAPI
+}
+
+func (s *sender) LoginUser(login, password string) error {
+	err := s.api.LoginUser(login, password)
+	return err
 }
 
 func (s *sender) RegisterUser(login, password string) error {

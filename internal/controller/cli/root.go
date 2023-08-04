@@ -34,6 +34,7 @@ type sender interface {
 	EditText(index int, title, body, meta string) error
 
 	RegisterUser(login, password string) error
+	LoginUser(login, password string) error
 }
 
 type cliCommands struct {
@@ -66,7 +67,7 @@ func New(s sender) *cliCommands {
 		},
 	}
 
-	rootCmd.AddCommand(login.New())
+	rootCmd.AddCommand(login.New(s))
 	rootCmd.AddCommand(logout.New())
 	rootCmd.AddCommand(register.New(s))
 	rootCmd.AddCommand(list.New(s))
