@@ -9,7 +9,7 @@ import (
 )
 
 type sender interface {
-	CreateText(title, body, meta string) error
+	CreateText(title, body, meta, user string) error
 }
 
 func New(s sender) *cobra.Command {
@@ -18,11 +18,11 @@ func New(s sender) *cobra.Command {
 		Use:   "text",
 		Short: "Save user text secrets",
 		Run: func(cmd *cobra.Command, args []string) {
-			key, _, err := encrypt.GetCliSecrets()
+			key, user, err := encrypt.GetCliSecrets()
 			encTitle, err := encrypt.EncryptMessage([]byte(key), title)
 			encBody, err := encrypt.EncryptMessage([]byte(key), body)
 			encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
-			err = s.CreateText(encTitle, encBody, encMeta)
+			err = s.CreateText(encTitle, encBody, encMeta, user)
 			if err != nil {
 				fmt.Println(err)
 			}

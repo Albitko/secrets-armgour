@@ -9,7 +9,7 @@ import (
 )
 
 type sender interface {
-	CreateCredentials(serviceName, serviceLogin, servicePassword, meta string) error
+	CreateCredentials(serviceName, serviceLogin, servicePassword, meta, user string) error
 }
 
 func New(s sender) *cobra.Command {
@@ -18,12 +18,12 @@ func New(s sender) *cobra.Command {
 		Use:   "credentials",
 		Short: "Save user credentials",
 		Run: func(cmd *cobra.Command, args []string) {
-			key, _, err := encrypt.GetCliSecrets()
+			key, user, err := encrypt.GetCliSecrets()
 			encName, err := encrypt.EncryptMessage([]byte(key), serviceName)
 			encLogin, err := encrypt.EncryptMessage([]byte(key), serviceLogin)
 			encPass, err := encrypt.EncryptMessage([]byte(key), servicePassword)
 			encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
-			err = s.CreateCredentials(encName, encLogin, encPass, encMeta)
+			err = s.CreateCredentials(encName, encLogin, encPass, encMeta, user)
 			if err != nil {
 				fmt.Println(err)
 			}

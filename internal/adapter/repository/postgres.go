@@ -605,14 +605,14 @@ func closeStatement(statement *sql.Stmt) {
 	}
 }
 
-func (d *postgres) InsertCard(card entity.UserCard) error {
+func (d *postgres) InsertCard(card entity.UserCard, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	insertCard, err := d.db.PrepareContext(
 		ctx,
-		"INSERT INTO cards_data (card_holder, card_number, card_validity_period, cvc_code, meta, created_at) VALUES ($1, $2, $3, $4, $5, $6);",
+		"INSERT INTO cards_data (user_id,card_holder, card_number, card_validity_period, cvc_code, meta, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7);",
 	)
 	if err != nil {
 		logger.Zap.Errorf("error: %s preparing statement", err.Error())
@@ -622,6 +622,7 @@ func (d *postgres) InsertCard(card entity.UserCard) error {
 
 	_, err = insertCard.ExecContext(
 		ctx,
+		user,
 		card.CardHolder,
 		card.CardNumber,
 		card.CardValidityPeriod,
@@ -636,14 +637,14 @@ func (d *postgres) InsertCard(card entity.UserCard) error {
 	return nil
 }
 
-func (d *postgres) InsertCredentials(credentials entity.UserCredentials) error {
+func (d *postgres) InsertCredentials(credentials entity.UserCredentials, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	insertCredentials, err := d.db.PrepareContext(
 		ctx,
-		"INSERT INTO credentials_data (service, service_login, service_password,  meta, created_at) VALUES ($1, $2, $3, $4, $5);",
+		"INSERT INTO credentials_data (user_id,service, service_login, service_password,  meta, created_at) VALUES ($1, $2, $3, $4, $5, $6);",
 	)
 	if err != nil {
 		logger.Zap.Errorf("error: %s preparing statement", err.Error())
@@ -653,6 +654,7 @@ func (d *postgres) InsertCredentials(credentials entity.UserCredentials) error {
 
 	_, err = insertCredentials.ExecContext(
 		ctx,
+		user,
 		credentials.ServiceName,
 		credentials.ServiceLogin,
 		credentials.ServicePassword,
@@ -666,14 +668,14 @@ func (d *postgres) InsertCredentials(credentials entity.UserCredentials) error {
 	return nil
 }
 
-func (d *postgres) InsertBinary(bin entity.UserBinary, data []byte) error {
+func (d *postgres) InsertBinary(bin entity.UserBinary, data []byte, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	insertBinary, err := d.db.PrepareContext(
 		ctx,
-		"INSERT INTO binary_data (title, data_content, meta, created_at) VALUES ($1, $2, $3, $4);",
+		"INSERT INTO binary_data (user_id,title, data_content, meta, created_at) VALUES ($1, $2, $3, $4, $5);",
 	)
 	if err != nil {
 		logger.Zap.Errorf("error: %s preparing statement", err.Error())
@@ -683,6 +685,7 @@ func (d *postgres) InsertBinary(bin entity.UserBinary, data []byte) error {
 
 	_, err = insertBinary.ExecContext(
 		ctx,
+		user,
 		bin.Title,
 		data,
 		bin.Meta,
@@ -695,14 +698,14 @@ func (d *postgres) InsertBinary(bin entity.UserBinary, data []byte) error {
 	return nil
 }
 
-func (d *postgres) InsertText(text entity.UserText) error {
+func (d *postgres) InsertText(text entity.UserText, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	insertText, err := d.db.PrepareContext(
 		ctx,
-		"INSERT INTO text_data (title, note, meta, created_at) VALUES ($1, $2, $3, $4);",
+		"INSERT INTO text_data (user_id,title, note, meta, created_at) VALUES ($1, $2, $3, $4, $5);",
 	)
 	if err != nil {
 		logger.Zap.Errorf("error: %s preparing statement", err.Error())
@@ -712,6 +715,7 @@ func (d *postgres) InsertText(text entity.UserText) error {
 
 	_, err = insertText.ExecContext(
 		ctx,
+		user,
 		text.Title,
 		text.Body,
 		text.Meta,

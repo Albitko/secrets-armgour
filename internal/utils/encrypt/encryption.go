@@ -71,5 +71,5 @@ func GetCliSecrets() (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	return cliSecrets.Key, cliSecrets.Token, nil
+	return cliSecrets.Key, cliSecrets.UserName, nil
 }

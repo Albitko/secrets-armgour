@@ -11,10 +11,10 @@ import (
 )
 
 type httpAPI interface {
-	SendCredentials(serviceName, serviceLogin, servicePassword, meta string) error
-	CreateText(title, body, meta string) error
-	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
-	CreateBinary(title, b64Content, meta string) error
+	SendCredentials(serviceName, serviceLogin, servicePassword, meta, user string) error
+	CreateText(title, body, meta, user string) error
+	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error
+	CreateBinary(title, b64Content, meta, user string) error
 	ListSecrets(data string) (string, error)
 	GetSecret(secretType string, idx int) (string, error)
 	DeleteUserSecrets(secretType string, idx int) error
@@ -156,26 +156,26 @@ func (s *sender) CreateBinary(title, dataPath, meta string) error {
 		return err
 	}
 	b64Content := base64.StdEncoding.EncodeToString(content)
-	key, _, err := encrypt.GetCliSecrets()
+	key, user, err := encrypt.GetCliSecrets()
 	encTitle, err := encrypt.EncryptMessage([]byte(key), title)
 	encContent, err := encrypt.EncryptMessage([]byte(key), b64Content)
 	encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
-	err = s.api.CreateBinary(encTitle, encContent, encMeta)
+	err = s.api.CreateBinary(encTitle, encContent, encMeta, user)
 	return err
 }
 
-func (s *sender) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
-	err := s.api.CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
+func (s *sender) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error {
+	err := s.api.CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user)
 	return err
 }
 
-func (s *sender) CreateText(title, body, meta string) error {
-	err := s.api.CreateText(title, body, meta)
+func (s *sender) CreateText(title, body, meta, user string) error {
+	err := s.api.CreateText(title, body, meta, user)
 	return err
 }
 
-func (s *sender) CreateCredentials(serviceName, serviceLogin, servicePassword, meta string) error {
-	err := s.api.SendCredentials(serviceName, serviceLogin, servicePassword, meta)
+func (s *sender) CreateCredentials(serviceName, serviceLogin, servicePassword, meta, user string) error {
+	err := s.api.SendCredentials(serviceName, serviceLogin, servicePassword, meta, user)
 	return err
 }
 

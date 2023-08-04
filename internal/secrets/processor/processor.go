@@ -11,10 +11,10 @@ import (
 )
 
 type repository interface {
-	InsertCard(card entity.UserCard) error
-	InsertCredentials(credentials entity.UserCredentials) error
-	InsertBinary(bin entity.UserBinary, data []byte) error
-	InsertText(text entity.UserText) error
+	InsertCard(card entity.UserCard, user string) error
+	InsertCredentials(credentials entity.UserCredentials, user string) error
+	InsertBinary(bin entity.UserBinary, data []byte, user string) error
+	InsertText(text entity.UserText, user string) error
 
 	UpdateCard(index int, card entity.UserCard) error
 	UpdateCredentials(index int, credentials entity.UserCredentials) error
@@ -121,28 +121,28 @@ func (p *processor) ListUserData(data string) (interface{}, error) {
 	return res, err
 }
 
-func (p *processor) BinaryCreation(binary entity.UserBinary) error {
+func (p *processor) BinaryCreation(binary entity.UserBinary, user string) error {
 	decodedContent, err := base64.StdEncoding.DecodeString(binary.B64Content)
 	if err != nil {
 		fmt.Println("Error decoding content:", err)
 		return err
 	}
-	err = p.repo.InsertBinary(binary, decodedContent)
+	err = p.repo.InsertBinary(binary, decodedContent, user)
 	return err
 }
 
-func (p *processor) TextCreation(text entity.UserText) error {
-	err := p.repo.InsertText(text)
+func (p *processor) TextCreation(text entity.UserText, user string) error {
+	err := p.repo.InsertText(text, user)
 	return err
 }
 
-func (p *processor) CredentialsCreation(credentials entity.UserCredentials) error {
-	err := p.repo.InsertCredentials(credentials)
+func (p *processor) CredentialsCreation(credentials entity.UserCredentials, user string) error {
+	err := p.repo.InsertCredentials(credentials, user)
 	return err
 }
 
-func (p *processor) CardCreation(card entity.UserCard) error {
-	err := p.repo.InsertCard(card)
+func (p *processor) CardCreation(card entity.UserCard, user string) error {
+	err := p.repo.InsertCard(card, user)
 	return err
 }
 

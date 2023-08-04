@@ -96,40 +96,40 @@ func (a *httpAPI) ListSecrets(data string) (string, error) {
 	return resp.String(), err
 }
 
-func (a *httpAPI) CreateBinary(title, b64Content, meta string) error {
+func (a *httpAPI) CreateBinary(title, b64Content, meta, user string) error {
 	binary := entity.UserBinary{
 		Title:      title,
 		B64Content: b64Content,
 		Meta:       meta,
 	}
-	_, err := a.client.R().SetBody(binary).Post(a.armgourURL + "/v1/secrets/binary")
+	_, err := a.client.R().SetBody(binary).Post(a.armgourURL + "/v1/secrets/binary/" + user)
 	return err
 }
 
-func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, meta string) error {
+func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, meta, user string) error {
 	userCredentials := entity.UserCredentials{
 		ServiceLogin:    serviceLogin,
 		ServiceName:     serviceName,
 		ServicePassword: servicePassword,
 		Meta:            meta,
 	}
-	resp, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/secrets/credentials")
+	resp, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/secrets/credentials/" + user)
 	fmt.Println(resp.String())
 	return err
 }
 
-func (a *httpAPI) CreateText(title, body, meta string) error {
+func (a *httpAPI) CreateText(title, body, meta, user string) error {
 	text := entity.UserText{
 		Title: title,
 		Body:  body,
 		Meta:  meta,
 	}
-	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/text")
+	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/text/" + user)
 	fmt.Println(resp.String())
 	return err
 }
 
-func (a *httpAPI) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
+func (a *httpAPI) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error {
 	card := entity.UserCard{
 		CardHolder:         cardHolder,
 		CardNumber:         cardNumber,
@@ -137,7 +137,7 @@ func (a *httpAPI) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode
 		CvcCode:            cvcCode,
 		Meta:               meta,
 	}
-	resp, err := a.client.R().SetBody(card).Post(a.armgourURL + "/v1/secrets/card")
+	resp, err := a.client.R().SetBody(card).Post(a.armgourURL + "/v1/secrets/card/" + user)
 	fmt.Println(resp.String())
 	return err
 }

@@ -10,9 +10,9 @@ import (
 )
 
 type sender interface {
-	CreateCredentials(serviceName, serviceLogin, servicePassword, meta string) error
-	CreateText(title, body, meta string) error
-	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
+	CreateCredentials(serviceName, serviceLogin, servicePassword, meta, user string) error
+	CreateText(title, body, meta, user string) error
+	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error
 	CreateBinary(title, dataPath, meta string) error
 }
 
