@@ -495,7 +495,7 @@ func (d *postgres) queryRows(ctx context.Context, query string, args ...interfac
 	return rows, nil
 }
 
-func (d *postgres) SelectUserData(data string) (interface{}, error) {
+func (d *postgres) SelectUserData(data, user string) (interface{}, error) {
 	var rows *sql.Rows
 	var err error
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -507,9 +507,9 @@ func (d *postgres) SelectUserData(data string) (interface{}, error) {
 		var credentials []entity.CutCredentials
 		var credential entity.CutCredentials
 		query := `
-		select id,service,meta  from credentials_data;
+		select id,service,meta  from credentials_data where user_id = $1;
 		`
-		rows, err = d.queryRows(ctx, query)
+		rows, err = d.queryRows(ctx, query, user)
 		if err != nil {
 			logger.Zap.Errorf(
 				"error query execution %s", err.Error(),
@@ -528,9 +528,9 @@ func (d *postgres) SelectUserData(data string) (interface{}, error) {
 		var bins []entity.CutBinary
 		var bin entity.CutBinary
 		query := `
-		select id,title,meta  from binary_data;
+		select id,title,meta  from binary_data where user_id = $1;
 		`
-		rows, err = d.queryRows(ctx, query)
+		rows, err = d.queryRows(ctx, query, user)
 		if err != nil {
 			logger.Zap.Errorf(
 				"error query execution %s", err.Error(),
@@ -549,9 +549,9 @@ func (d *postgres) SelectUserData(data string) (interface{}, error) {
 		var texts []entity.CutText
 		var text entity.CutText
 		query := `
-		select id,title,meta  from text_data;
+		select id,title,meta  from text_data where user_id = $1;
 		`
-		rows, err = d.queryRows(ctx, query)
+		rows, err = d.queryRows(ctx, query, user)
 		if err != nil {
 			logger.Zap.Errorf(
 				"error query execution %s", err.Error(),
@@ -571,9 +571,9 @@ func (d *postgres) SelectUserData(data string) (interface{}, error) {
 		var cards []entity.CutCard
 		var card entity.CutCard
 		query := `
-		select id,card_number,meta  from cards_data;
+		select id,card_number,meta  from cards_data where user_id = $1;
 		`
-		rows, err = d.queryRows(ctx, query)
+		rows, err = d.queryRows(ctx, query, user)
 		if err != nil {
 			logger.Zap.Errorf(
 				"error query execution %s", err.Error(),

@@ -15,7 +15,7 @@ type httpAPI interface {
 	CreateText(title, body, meta, user string) error
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error
 	CreateBinary(title, b64Content, meta, user string) error
-	ListSecrets(data string) (string, error)
+	ListSecrets(data, user string) (string, error)
 	GetSecret(secretType string, idx int) (string, error)
 	DeleteUserSecrets(secretType string, idx int) error
 	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error
@@ -113,8 +113,8 @@ func (s *sender) GetUserSecrets(secretType string, idx int) (interface{}, error)
 	return res, err
 }
 
-func (s *sender) ListUserSecrets(data string) (interface{}, error) {
-	resp, err := s.api.ListSecrets(data)
+func (s *sender) ListUserSecrets(data, user string) (interface{}, error) {
+	resp, err := s.api.ListSecrets(data, user)
 	var res interface{}
 	switch data {
 	case "credentials":

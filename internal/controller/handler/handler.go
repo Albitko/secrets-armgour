@@ -17,7 +17,7 @@ type secretsProcessor interface {
 	TextCreation(text entity.UserText, user string) error
 	CredentialsCreation(text entity.UserCredentials, user string) error
 
-	ListUserData(data string) (interface{}, error)
+	ListUserData(data, user string) (interface{}, error)
 	GetUserData(data, id string) (interface{}, error)
 	DeleteUserData(data, id string) error
 
@@ -74,7 +74,8 @@ func (h *handler) Register(ctx *gin.Context) {
 
 func (h *handler) List(ctx *gin.Context) {
 	data := ctx.Param("data")
-	res, err := h.processor.ListUserData(data)
+	user := ctx.Param("user")
+	res, err := h.processor.ListUserData(data, user)
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return

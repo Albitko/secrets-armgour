@@ -24,7 +24,7 @@ type sender interface {
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error
 	CreateBinary(title, dataPath, meta string) error
 
-	ListUserSecrets(data string) (interface{}, error)
+	ListUserSecrets(data, user string) (interface{}, error)
 	GetUserSecrets(secretType string, idx int) (interface{}, error)
 	DeleteUserSecrets(secretType string, idx int) error
 	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error

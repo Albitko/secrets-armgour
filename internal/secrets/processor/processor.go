@@ -21,7 +21,7 @@ type repository interface {
 	UpdateBinary(index int, bin entity.UserBinary, data []byte) error
 	UpdateText(index int, text entity.UserText) error
 
-	SelectUserData(data string) (interface{}, error)
+	SelectUserData(data, string string) (interface{}, error)
 	GetUserData(data, id string) (interface{}, error)
 	DeleteUserData(data, id string) error
 
@@ -116,8 +116,8 @@ func (p *processor) GetUserData(data, id string) (interface{}, error) {
 	return res, err
 }
 
-func (p *processor) ListUserData(data string) (interface{}, error) {
-	res, err := p.repo.SelectUserData(data)
+func (p *processor) ListUserData(data, user string) (interface{}, error) {
+	res, err := p.repo.SelectUserData(data, user)
 	return res, err
 }
 

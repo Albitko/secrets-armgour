@@ -91,8 +91,8 @@ func (a *httpAPI) GetSecret(secretType string, idx int) (string, error) {
 	return resp.String(), err
 }
 
-func (a *httpAPI) ListSecrets(data string) (string, error) {
-	resp, err := a.client.R().Get(a.armgourURL + "/v1/secrets/list/" + data)
+func (a *httpAPI) ListSecrets(data, user string) (string, error) {
+	resp, err := a.client.R().Get(a.armgourURL + "/v1/secrets/list/" + data + "/" + user)
 	return resp.String(), err
 }
 

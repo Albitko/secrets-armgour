@@ -10,7 +10,7 @@ import (
 )
 
 type sender interface {
-	ListUserSecrets(data string) (interface{}, error)
+	ListUserSecrets(data, user string) (interface{}, error)
 }
 
 func New(s sender) *cobra.Command {
@@ -19,7 +19,13 @@ func New(s sender) *cobra.Command {
 		Use:   "list",
 		Short: "List user saved secrets",
 		Run: func(cmd *cobra.Command, args []string) {
-			res, err := s.ListUserSecrets(data)
+			key, user, err := encrypt.GetCliSecrets()
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			res, err := s.ListUserSecrets(data, user)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -27,19 +33,16 @@ func New(s sender) *cobra.Command {
 			case "credentials":
 				credentials := res.([]entity.CutCredentials)
 				for _, c := range credentials {
-					key, _, err := encrypt.GetCliSecrets()
-					if err != nil {
-						fmt.Println(err)
-						return
-					}
 					decMeta, err := encrypt.DecryptMessage([]byte(key), c.Meta)
 					decService, err := encrypt.DecryptMessage([]byte(key), c.ServiceName)
+					if err != nil {
+						fmt.Println(err)
+					}
 					fmt.Println(c.Id, decService, decMeta)
 				}
 			case "binary":
 				bin := res.([]entity.CutBinary)
 				for _, b := range bin {
-					key, _, err := encrypt.GetCliSecrets()
 					decMeta, err := encrypt.DecryptMessage([]byte(key), b.Meta)
 					decTitle, err := encrypt.DecryptMessage([]byte(key), b.Title)
 					if err != nil {
@@ -50,7 +53,6 @@ func New(s sender) *cobra.Command {
 			case "text":
 				texts := res.([]entity.CutText)
 				for _, t := range texts {
-					key, _, err := encrypt.GetCliSecrets()
 					decMeta, err := encrypt.DecryptMessage([]byte(key), t.Meta)
 					decTitle, err := encrypt.DecryptMessage([]byte(key), t.Title)
 					if err != nil {
@@ -61,7 +63,6 @@ func New(s sender) *cobra.Command {
 			case "card":
 				cards := res.([]entity.CutCard)
 				for _, c := range cards {
-					key, _, err := encrypt.GetCliSecrets()
 					numberDec, err := encrypt.DecryptMessage([]byte(key), c.CardNumber)
 					metaDec, err := encrypt.DecryptMessage([]byte(key), c.Meta)
 
