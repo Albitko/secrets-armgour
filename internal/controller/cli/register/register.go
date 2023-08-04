@@ -12,14 +12,21 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
-func New() *cobra.Command {
+type sender interface {
+	RegisterUser(login, password string) error
+}
+
+func New(s sender) *cobra.Command {
 	var login, password string
 
 	registerCmd := &cobra.Command{
 		Use:   "register",
 		Short: "Register in armGOur service",
 		Run: func(cmd *cobra.Command, args []string) {
-			//c.sender.registerUser(c.login, c.password)
+			err := s.RegisterUser(login, password)
+			if err != nil {
+				fmt.Println(err)
+			}
 
 			hasher := sha1.New()
 			hasher.Write([]byte(login + password))

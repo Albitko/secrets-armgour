@@ -24,6 +24,8 @@ type secretsProcessor interface {
 	BinaryEdit(index string, binary entity.UserBinary) error
 	TextEdit(index string, text entity.UserText) error
 	CredentialsEdit(index string, text entity.UserCredentials) error
+
+	RegisterUser(auth entity.UserAuth) error
 }
 
 type handler struct {
@@ -39,7 +41,16 @@ func (h *handler) Logout(ctx *gin.Context) {
 }
 
 func (h *handler) Register(ctx *gin.Context) {
-
+	var auth entity.UserAuth
+	if err := json.NewDecoder(ctx.Request.Body).Decode(&auth); err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+	err := h.processor.RegisterUser(auth)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *handler) List(ctx *gin.Context) {

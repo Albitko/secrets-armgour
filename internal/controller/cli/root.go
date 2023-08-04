@@ -32,6 +32,8 @@ type sender interface {
 	EditBinary(index int, title, dataPath, meta string) error
 	EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 	EditText(index int, title, body, meta string) error
+
+	RegisterUser(login, password string) error
 }
 
 type cliCommands struct {
@@ -66,7 +68,7 @@ func New(s sender) *cliCommands {
 
 	rootCmd.AddCommand(login.New())
 	rootCmd.AddCommand(logout.New())
-	rootCmd.AddCommand(register.New())
+	rootCmd.AddCommand(register.New(s))
 	rootCmd.AddCommand(list.New(s))
 	rootCmd.AddCommand(get.New(s))
 	rootCmd.AddCommand(create.New(s))

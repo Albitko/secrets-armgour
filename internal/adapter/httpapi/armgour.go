@@ -14,6 +14,15 @@ type httpAPI struct {
 	client     *resty.Client
 }
 
+func (a *httpAPI) RegisterUser(login, password string) error {
+	userCredentials := entity.UserAuth{
+		Login:    login,
+		Password: password,
+	}
+	_, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/user/register")
+	return err
+}
+
 func (a *httpAPI) EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error {
 	userCredentials := entity.UserCredentials{
 		ServiceLogin:    serviceLogin,

@@ -22,10 +22,17 @@ type httpAPI interface {
 	EditText(index int, title, body, meta string) error
 	EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 	EditBinary(index int, title, b64Content, meta string) error
+
+	RegisterUser(login, password string) error
 }
 
 type sender struct {
 	api httpAPI
+}
+
+func (s *sender) RegisterUser(login, password string) error {
+	err := s.api.RegisterUser(login, password)
+	return err
 }
 
 func (s *sender) EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error {

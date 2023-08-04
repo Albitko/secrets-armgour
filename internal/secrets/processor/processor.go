@@ -22,10 +22,17 @@ type repository interface {
 	SelectUserData(data string) (interface{}, error)
 	GetUserData(data, id string) (interface{}, error)
 	DeleteUserData(data, id string) error
+
+	RegisterUser(auth entity.UserAuth) error
 }
 
 type processor struct {
 	repo repository
+}
+
+func (p *processor) RegisterUser(auth entity.UserAuth) error {
+	err := p.repo.RegisterUser(auth)
+	return err
 }
 
 func (p *processor) CardEdit(index string, card entity.UserCard) error {

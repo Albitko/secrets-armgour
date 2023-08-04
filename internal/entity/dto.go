@@ -13,6 +13,11 @@ type UserText struct {
 	Meta  string
 }
 
+type UserAuth struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
+
 type UserCard struct {
 	CardHolder         string
 	CardNumber         string

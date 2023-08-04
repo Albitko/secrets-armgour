@@ -33,9 +33,8 @@ func Run() {
 	router.Use(gin.Recovery())
 
 	router.GET("/v1/user/login", h.Login)
-	router.GET("/v1/user/logout", h.Logout)
-	router.GET("/v1/user/register", h.Register)
 
+	router.POST("/v1/user/register", h.Register)
 	router.GET("/v1/secrets/get/:data/:id", h.Get)
 	router.GET("/v1/secrets/list/:data", h.List)
 	router.DELETE("/v1/secrets/:data/:id", h.Delete)

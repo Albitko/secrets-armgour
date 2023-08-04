@@ -49,9 +49,9 @@ const schema = `
 		meta text,
  	    created_at timestamp
  	);
-	CREATE TABLE IF NOT EXISTS users (
+	CREATE TABLE IF NOT EXISTS users_data (
  	    id serial primary key,
- 		user_id text,
+		user_login text,
  		password_hash text,
  	    created_at timestamp
  	);
@@ -59,6 +59,37 @@ const schema = `
 
 type postgres struct {
 	db *sql.DB
+}
+
+func (d *postgres) RegisterUser(auth entity.UserAuth) error {
+	//now := time.Now()
+	//createdAt := now.Format("2006-01-02T15:04")
+	//ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	//defer cancel()
+	//insertCard, err := d.db.PrepareContext(
+	//	ctx,
+	//	"INSERT INTO cards_data (card_holder, card_number, card_validity_period, cvc_code, meta, created_at) VALUES ($1, $2, $3, $4, $5, $6);",
+	//)
+	//if err != nil {
+	//	logger.Zap.Errorf("error: %s preparing statement", err.Error())
+	//	return err
+	//}
+	//defer closeStatement(insertCard)
+	//
+	//_, err = insertCard.ExecContext(
+	//	ctx,
+	//	card.CardHolder,
+	//	card.CardNumber,
+	//	card.CardValidityPeriod,
+	//	card.CvcCode,
+	//	card.Meta,
+	//	createdAt,
+	//)
+	//if err != nil {
+	//	logger.Zap.Errorf("error: %s write card data", err.Error())
+	//	return err
+	//}
+	return nil
 }
 
 func (d *postgres) UpdateCard(index int, card entity.UserCard) error {
