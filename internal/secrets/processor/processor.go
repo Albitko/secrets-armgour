@@ -11,6 +11,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
+//go:generate mockery --name repository
 type repository interface {
 	InsertCard(ctx context.Context, card entity.UserCard, user string) error
 	InsertCredentials(ctx context.Context, credentials entity.UserCredentials, user string) error

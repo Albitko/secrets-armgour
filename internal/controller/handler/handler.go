@@ -12,6 +12,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
+//go:generate mockery --name secretsProcessor
 type secretsProcessor interface {
 	CardCreation(ctx context.Context, card entity.UserCard, user string) error
 	BinaryCreation(ctx context.Context, binary entity.UserBinary, user string) error
