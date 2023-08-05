@@ -21,10 +21,11 @@ func Run() {
 	}
 
 	repo, err := repository.New(appCfg.DatabaseDsn, log)
-	defer repo.Close()
 	if err != nil {
 		panic(fmt.Errorf("can't connecto to DB: %w", err))
 	}
+
+	defer repo.Close()
 
 	secretsProcessor := processor.New(repo)
 	h := handler.New(secretsProcessor)

@@ -18,11 +18,33 @@ func New(s sender) *cobra.Command {
 		Use:   "credentials",
 		Short: "Save user credentials",
 		Run: func(cmd *cobra.Command, args []string) {
-			key, user, err := encrypt.GetCliSecrets()
-			encName, err := encrypt.EncryptMessage([]byte(key), serviceName)
-			encLogin, err := encrypt.EncryptMessage([]byte(key), serviceLogin)
-			encPass, err := encrypt.EncryptMessage([]byte(key), servicePassword)
-			encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
+			var key, user, encName, encLogin, encPass, encMeta string
+			var err error
+			key, user, err = encrypt.GetCliSecrets()
+			if err != nil {
+				fmt.Println("Error reading file:", err)
+				return
+			}
+			encName, err = encrypt.EncryptMessage([]byte(key), serviceName)
+			if err != nil {
+				fmt.Println("Error reading file:", err)
+				return
+			}
+			encLogin, err = encrypt.EncryptMessage([]byte(key), serviceLogin)
+			if err != nil {
+				fmt.Println("Error reading file:", err)
+				return
+			}
+			encPass, err = encrypt.EncryptMessage([]byte(key), servicePassword)
+			if err != nil {
+				fmt.Println("Error reading file:", err)
+				return
+			}
+			encMeta, err = encrypt.EncryptMessage([]byte(key), meta)
+			if err != nil {
+				fmt.Println("Error reading file:", err)
+				return
+			}
 			err = s.CreateCredentials(encName, encLogin, encPass, encMeta, user)
 			if err != nil {
 				fmt.Println(err)
@@ -33,10 +55,17 @@ func New(s sender) *cobra.Command {
 	createCmd.PersistentFlags().StringVarP(
 		&serviceName, "service", "s", "", "Service name")
 	err := createCmd.MarkPersistentFlagRequired("service")
-
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return nil
+	}
 	createCmd.PersistentFlags().StringVarP(
 		&serviceLogin, "login", "l", "", "Service login")
 	err = createCmd.MarkPersistentFlagRequired("login")
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return nil
+	}
 	createCmd.PersistentFlags().StringVarP(
 		&servicePassword, "password", "p", "", "Service password")
 	err = createCmd.MarkPersistentFlagRequired("password")

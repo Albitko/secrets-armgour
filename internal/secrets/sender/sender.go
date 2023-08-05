@@ -47,6 +47,7 @@ func (s *sender) EditCredentials(index int, serviceName, serviceLogin, servicePa
 }
 
 func (s *sender) EditBinary(index int, title, dataPath, meta string) error {
+	var key, encTitle, encContent, encMeta string
 	content, err := os.ReadFile(dataPath)
 	if err != nil {
 		fmt.Println("Error reading file:", err)
@@ -54,10 +55,26 @@ func (s *sender) EditBinary(index int, title, dataPath, meta string) error {
 	}
 	b64Content := base64.StdEncoding.EncodeToString(content)
 
-	key, _, err := encrypt.GetCliSecrets()
-	encTitle, err := encrypt.EncryptMessage([]byte(key), title)
-	encContent, err := encrypt.EncryptMessage([]byte(key), b64Content)
-	encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
+	key, _, err = encrypt.GetCliSecrets()
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	encTitle, err = encrypt.EncryptMessage([]byte(key), title)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	encContent, err = encrypt.EncryptMessage([]byte(key), b64Content)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	encMeta, err = encrypt.EncryptMessage([]byte(key), meta)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 
 	err = s.api.EditBinary(index, encTitle, encContent, encMeta)
 	return err
@@ -157,9 +174,25 @@ func (s *sender) CreateBinary(title, dataPath, meta string) error {
 	}
 	b64Content := base64.StdEncoding.EncodeToString(content)
 	key, user, err := encrypt.GetCliSecrets()
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return err
+	}
 	encTitle, err := encrypt.EncryptMessage([]byte(key), title)
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return err
+	}
 	encContent, err := encrypt.EncryptMessage([]byte(key), b64Content)
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return err
+	}
 	encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return err
+	}
 	err = s.api.CreateBinary(encTitle, encContent, encMeta, user)
 	return err
 }

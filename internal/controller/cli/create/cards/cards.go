@@ -18,12 +18,38 @@ func New(s sender) *cobra.Command {
 		Use:   "cards",
 		Short: "Create user cards secrets",
 		Run: func(cmd *cobra.Command, args []string) {
+			var encHolder, encNumber, encPeriod string
+			var err error
 			key, user, err := encrypt.GetCliSecrets()
-			encHolder, err := encrypt.EncryptMessage([]byte(key), cardHolder)
-			encNumber, err := encrypt.EncryptMessage([]byte(key), cardNumber)
-			encPeriod, err := encrypt.EncryptMessage([]byte(key), cardValidityPeriod)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			encHolder, err = encrypt.EncryptMessage([]byte(key), cardHolder)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			encNumber, err = encrypt.EncryptMessage([]byte(key), cardNumber)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			encPeriod, err = encrypt.EncryptMessage([]byte(key), cardValidityPeriod)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 			encCvc, err := encrypt.EncryptMessage([]byte(key), cvcCode)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 			encMeta, err := encrypt.EncryptMessage([]byte(key), meta)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 			err = s.CreateCard(encHolder, encNumber, encPeriod, encCvc, encMeta, user)
 			if err != nil {
 				fmt.Println(err)

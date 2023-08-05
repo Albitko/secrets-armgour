@@ -22,9 +22,14 @@ func New(s sender) *cobra.Command {
 		Use:   "get",
 		Short: "Get user saved secrets. Usage get --binary -i 23",
 		Run: func(cmd *cobra.Command, args []string) {
-			key, user, err := encrypt.GetCliSecrets()
-
-			secrets, err := s.GetUserSecrets(data, user, index)
+			var key, user string
+			var err error
+			var secrets interface{}
+			key, user, err = encrypt.GetCliSecrets()
+			if err != nil {
+				fmt.Println(err)
+			}
+			secrets, err = s.GetUserSecrets(data, user, index)
 			if err != nil {
 				fmt.Println(err, secrets)
 			}
@@ -32,8 +37,20 @@ func New(s sender) *cobra.Command {
 			case "credentials":
 				credentials := secrets.(entity.UserCredentials)
 				decMeta, err := encrypt.DecryptMessage([]byte(key), credentials.Meta)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
 				decService, err := encrypt.DecryptMessage([]byte(key), credentials.ServiceName)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
 				decLogin, err := encrypt.DecryptMessage([]byte(key), credentials.ServiceLogin)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
 				decPass, err := encrypt.DecryptMessage([]byte(key), credentials.ServicePassword)
 				if err != nil {
 					fmt.Println(err)
@@ -43,7 +60,15 @@ func New(s sender) *cobra.Command {
 			case "binary":
 				bin := secrets.(entity.UserBinary)
 				decMeta, err := encrypt.DecryptMessage([]byte(key), bin.Meta)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
 				decTitle, err := encrypt.DecryptMessage([]byte(key), bin.Title)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
 				decContent, err := encrypt.DecryptMessage([]byte(key), bin.B64Content)
 				if err != nil {
 					fmt.Println(err)
@@ -64,7 +89,15 @@ func New(s sender) *cobra.Command {
 				text := secrets.(entity.UserText)
 
 				decMeta, err := encrypt.DecryptMessage([]byte(key), text.Meta)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
 				decTitle, err := encrypt.DecryptMessage([]byte(key), text.Title)
+				if err != nil {
+					fmt.Println("Error reading file:", err)
+					return
+				}
 				decBody, err := encrypt.DecryptMessage([]byte(key), text.Body)
 				if err != nil {
 					fmt.Println(err)
@@ -74,13 +107,29 @@ func New(s sender) *cobra.Command {
 				card := secrets.(entity.UserCard)
 
 				holderDec, err := encrypt.DecryptMessage([]byte(key), card.CardHolder)
-				numberDec, err := encrypt.DecryptMessage([]byte(key), card.CardNumber)
-				periodDec, err := encrypt.DecryptMessage([]byte(key), card.CardValidityPeriod)
-				cvcDec, err := encrypt.DecryptMessage([]byte(key), card.CvcCode)
-				metaDec, err := encrypt.DecryptMessage([]byte(key), card.Meta)
-
 				if err != nil {
 					fmt.Println(err)
+					return
+				}
+				numberDec, err := encrypt.DecryptMessage([]byte(key), card.CardNumber)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				periodDec, err := encrypt.DecryptMessage([]byte(key), card.CardValidityPeriod)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				cvcDec, err := encrypt.DecryptMessage([]byte(key), card.CvcCode)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				metaDec, err := encrypt.DecryptMessage([]byte(key), card.Meta)
+				if err != nil {
+					fmt.Println(err)
+					return
 				}
 				fmt.Println("Card holder", holderDec,
 					"Card number", numberDec, "Validity period", periodDec, "CVC", cvcDec, "Description:", metaDec)
