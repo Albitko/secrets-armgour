@@ -71,9 +71,9 @@ type postgres struct {
 	l  logger
 }
 
-func (d *postgres) GetUserPasswordHash(login string) (string, error) {
+func (d *postgres) GetUserPasswordHash(ctx context.Context, login string) (string, error) {
 	var passHash string
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	getSecret, err := d.db.PrepareContext(
 		ctx, `select password_hash from users_data where user_login = $1;`,
@@ -96,11 +96,11 @@ func (d *postgres) GetUserPasswordHash(login string) (string, error) {
 	return passHash, nil
 }
 
-func (d *postgres) RegisterUser(login, pass string) error {
+func (d *postgres) RegisterUser(ctx context.Context, login, pass string) error {
 	var pgErr *pgconn.PgError
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	insertCard, err := d.db.PrepareContext(
 		ctx,
@@ -130,8 +130,8 @@ func (d *postgres) RegisterUser(login, pass string) error {
 	return nil
 }
 
-func (d *postgres) UpdateCard(index int, card entity.UserCard) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (d *postgres) UpdateCard(ctx context.Context, index int, card entity.UserCard) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	updateCard, err := d.db.PrepareContext(
@@ -170,8 +170,8 @@ func (d *postgres) UpdateCard(index int, card entity.UserCard) error {
 	return nil
 }
 
-func (d *postgres) UpdateCredentials(index int, credentials entity.UserCredentials) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (d *postgres) UpdateCredentials(ctx context.Context, index int, credentials entity.UserCredentials) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	updateCredentials, err := d.db.PrepareContext(
@@ -209,8 +209,8 @@ func (d *postgres) UpdateCredentials(index int, credentials entity.UserCredentia
 	return nil
 }
 
-func (d *postgres) UpdateBinary(index int, bin entity.UserBinary, data []byte) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (d *postgres) UpdateBinary(ctx context.Context, index int, bin entity.UserBinary, data []byte) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	updateBinary, err := d.db.PrepareContext(
@@ -247,8 +247,8 @@ func (d *postgres) UpdateBinary(index int, bin entity.UserBinary, data []byte) e
 	return nil
 }
 
-func (d *postgres) UpdateText(index int, text entity.UserText) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (d *postgres) UpdateText(ctx context.Context, index int, text entity.UserText) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
 	updateText, err := d.db.PrepareContext(
@@ -285,8 +285,8 @@ func (d *postgres) UpdateText(index int, text entity.UserText) error {
 	return nil
 }
 
-func (d *postgres) DeleteUserData(data, id string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (d *postgres) DeleteUserData(ctx context.Context, data, id string) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	var query string
 	switch data {
 	case "credentials":
@@ -324,8 +324,8 @@ func (d *postgres) DeleteUserData(data, id string) error {
 	return nil
 }
 
-func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (d *postgres) GetUserData(ctx context.Context, data, id, user string) (interface{}, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	var res interface{}
 
@@ -500,10 +500,10 @@ func (d *postgres) queryRows(ctx context.Context, query string, args ...interfac
 	return rows, nil
 }
 
-func (d *postgres) SelectUserData(data, user string) (interface{}, error) {
+func (d *postgres) SelectUserData(ctx context.Context, data, user string) (interface{}, error) {
 	var rows *sql.Rows
 	var err error
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	var res interface{}
 
@@ -610,10 +610,10 @@ func (d *postgres) closeStatement(statement *sql.Stmt) {
 	}
 }
 
-func (d *postgres) InsertCard(card entity.UserCard, user string) error {
+func (d *postgres) InsertCard(ctx context.Context, card entity.UserCard, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	insertCard, err := d.db.PrepareContext(
 		ctx,
@@ -642,10 +642,10 @@ func (d *postgres) InsertCard(card entity.UserCard, user string) error {
 	return nil
 }
 
-func (d *postgres) InsertCredentials(credentials entity.UserCredentials, user string) error {
+func (d *postgres) InsertCredentials(ctx context.Context, credentials entity.UserCredentials, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	insertCredentials, err := d.db.PrepareContext(
 		ctx,
@@ -673,10 +673,10 @@ func (d *postgres) InsertCredentials(credentials entity.UserCredentials, user st
 	return nil
 }
 
-func (d *postgres) InsertBinary(bin entity.UserBinary, data []byte, user string) error {
+func (d *postgres) InsertBinary(ctx context.Context, bin entity.UserBinary, data []byte, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	insertBinary, err := d.db.PrepareContext(
 		ctx,
@@ -703,10 +703,10 @@ func (d *postgres) InsertBinary(bin entity.UserBinary, data []byte, user string)
 	return nil
 }
 
-func (d *postgres) InsertText(text entity.UserText, user string) error {
+func (d *postgres) InsertText(ctx context.Context, text entity.UserText, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	insertText, err := d.db.PrepareContext(
 		ctx,

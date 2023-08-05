@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"strconv"
@@ -11,30 +12,30 @@ import (
 )
 
 type repository interface {
-	InsertCard(card entity.UserCard, user string) error
-	InsertCredentials(credentials entity.UserCredentials, user string) error
-	InsertBinary(bin entity.UserBinary, data []byte, user string) error
-	InsertText(text entity.UserText, user string) error
+	InsertCard(ctx context.Context, card entity.UserCard, user string) error
+	InsertCredentials(ctx context.Context, credentials entity.UserCredentials, user string) error
+	InsertBinary(ctx context.Context, bin entity.UserBinary, data []byte, user string) error
+	InsertText(ctx context.Context, text entity.UserText, user string) error
 
-	UpdateCard(index int, card entity.UserCard) error
-	UpdateCredentials(index int, credentials entity.UserCredentials) error
-	UpdateBinary(index int, bin entity.UserBinary, data []byte) error
-	UpdateText(index int, text entity.UserText) error
+	UpdateCard(ctx context.Context, index int, card entity.UserCard) error
+	UpdateCredentials(ctx context.Context, index int, credentials entity.UserCredentials) error
+	UpdateBinary(ctx context.Context, index int, bin entity.UserBinary, data []byte) error
+	UpdateText(ctx context.Context, index int, text entity.UserText) error
 
-	SelectUserData(data, string string) (interface{}, error)
-	GetUserData(data, id, user string) (interface{}, error)
-	DeleteUserData(data, id string) error
+	SelectUserData(ctx context.Context, data, string string) (interface{}, error)
+	GetUserData(ctx context.Context, data, id, user string) (interface{}, error)
+	DeleteUserData(ctx context.Context, data, id string) error
 
-	RegisterUser(login, pass string) error
-	GetUserPasswordHash(login string) (string, error)
+	RegisterUser(ctx context.Context, login, pass string) error
+	GetUserPasswordHash(ctx context.Context, login string) (string, error)
 }
 
 type processor struct {
 	repo repository
 }
 
-func (p *processor) LoginUser(auth entity.UserAuth) error {
-	storedHash, err := p.repo.GetUserPasswordHash(auth.Login)
+func (p *processor) LoginUser(ctx context.Context, auth entity.UserAuth) error {
+	storedHash, err := p.repo.GetUserPasswordHash(ctx, auth.Login)
 	if err != nil {
 		return err
 	}
@@ -47,26 +48,26 @@ func (p *processor) LoginUser(auth entity.UserAuth) error {
 	return err
 }
 
-func (p *processor) RegisterUser(auth entity.UserAuth) error {
+func (p *processor) RegisterUser(ctx context.Context, auth entity.UserAuth) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(auth.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-	err = p.repo.RegisterUser(auth.Login, string(hashedPassword))
+	err = p.repo.RegisterUser(ctx, auth.Login, string(hashedPassword))
 	return err
 }
 
-func (p *processor) CardEdit(index string, card entity.UserCard) error {
+func (p *processor) CardEdit(ctx context.Context, index string, card entity.UserCard) error {
 	intIndex, err := strconv.Atoi(index)
 	if err != nil {
 		fmt.Println("Error parsing index:", err)
 		return err
 	}
-	err = p.repo.UpdateCard(intIndex, card)
+	err = p.repo.UpdateCard(ctx, intIndex, card)
 	return err
 }
 
-func (p *processor) BinaryEdit(index string, binary entity.UserBinary) error {
+func (p *processor) BinaryEdit(ctx context.Context, index string, binary entity.UserBinary) error {
 	decodedContent, err := base64.StdEncoding.DecodeString(binary.B64Content)
 	if err != nil {
 		fmt.Println("Error decoding content:", err)
@@ -77,37 +78,37 @@ func (p *processor) BinaryEdit(index string, binary entity.UserBinary) error {
 		fmt.Println("Error parsing index:", err)
 		return err
 	}
-	err = p.repo.UpdateBinary(intIndex, binary, decodedContent)
+	err = p.repo.UpdateBinary(ctx, intIndex, binary, decodedContent)
 	return err
 }
 
-func (p *processor) TextEdit(index string, text entity.UserText) error {
+func (p *processor) TextEdit(ctx context.Context, index string, text entity.UserText) error {
 	intIndex, err := strconv.Atoi(index)
 	if err != nil {
 		fmt.Println("Error parsing index:", err)
 		return err
 	}
-	err = p.repo.UpdateText(intIndex, text)
+	err = p.repo.UpdateText(ctx, intIndex, text)
 	return err
 }
 
-func (p *processor) CredentialsEdit(index string, credentials entity.UserCredentials) error {
+func (p *processor) CredentialsEdit(ctx context.Context, index string, credentials entity.UserCredentials) error {
 	intIndex, err := strconv.Atoi(index)
 	if err != nil {
 		fmt.Println("Error parsing index:", err)
 		return err
 	}
-	err = p.repo.UpdateCredentials(intIndex, credentials)
+	err = p.repo.UpdateCredentials(ctx, intIndex, credentials)
 	return err
 }
 
-func (p *processor) DeleteUserData(data, id string) error {
-	err := p.repo.DeleteUserData(data, id)
+func (p *processor) DeleteUserData(ctx context.Context, data, id string) error {
+	err := p.repo.DeleteUserData(ctx, data, id)
 	return err
 }
 
-func (p *processor) GetUserData(data, id, user string) (interface{}, error) {
-	res, err := p.repo.GetUserData(data, id, user)
+func (p *processor) GetUserData(ctx context.Context, data, id, user string) (interface{}, error) {
+	res, err := p.repo.GetUserData(ctx, data, id, user)
 	if data == "binary" {
 		binRes := res.(entity.UserBinary)
 		binRes.B64Content = base64.StdEncoding.EncodeToString([]byte(binRes.B64Content))
@@ -116,33 +117,33 @@ func (p *processor) GetUserData(data, id, user string) (interface{}, error) {
 	return res, err
 }
 
-func (p *processor) ListUserData(data, user string) (interface{}, error) {
-	res, err := p.repo.SelectUserData(data, user)
+func (p *processor) ListUserData(ctx context.Context, data, user string) (interface{}, error) {
+	res, err := p.repo.SelectUserData(ctx, data, user)
 	return res, err
 }
 
-func (p *processor) BinaryCreation(binary entity.UserBinary, user string) error {
+func (p *processor) BinaryCreation(ctx context.Context, binary entity.UserBinary, user string) error {
 	decodedContent, err := base64.StdEncoding.DecodeString(binary.B64Content)
 	if err != nil {
 		fmt.Println("Error decoding content:", err)
 		return err
 	}
-	err = p.repo.InsertBinary(binary, decodedContent, user)
+	err = p.repo.InsertBinary(ctx, binary, decodedContent, user)
 	return err
 }
 
-func (p *processor) TextCreation(text entity.UserText, user string) error {
-	err := p.repo.InsertText(text, user)
+func (p *processor) TextCreation(ctx context.Context, text entity.UserText, user string) error {
+	err := p.repo.InsertText(ctx, text, user)
 	return err
 }
 
-func (p *processor) CredentialsCreation(credentials entity.UserCredentials, user string) error {
-	err := p.repo.InsertCredentials(credentials, user)
+func (p *processor) CredentialsCreation(ctx context.Context, credentials entity.UserCredentials, user string) error {
+	err := p.repo.InsertCredentials(ctx, credentials, user)
 	return err
 }
 
-func (p *processor) CardCreation(card entity.UserCard, user string) error {
-	err := p.repo.InsertCard(card, user)
+func (p *processor) CardCreation(ctx context.Context, card entity.UserCard, user string) error {
+	err := p.repo.InsertCard(ctx, card, user)
 	return err
 }
 
