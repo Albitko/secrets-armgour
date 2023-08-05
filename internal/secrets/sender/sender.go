@@ -16,7 +16,7 @@ type httpAPI interface {
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error
 	CreateBinary(title, b64Content, meta, user string) error
 	ListSecrets(data, user string) (string, error)
-	GetSecret(secretType string, idx int) (string, error)
+	GetSecret(secretType, user string, idx int) (string, error)
 	DeleteUserSecrets(secretType string, idx int) error
 	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error
 	EditText(index int, title, body, meta string) error
@@ -77,8 +77,8 @@ func (s *sender) DeleteUserSecrets(secretType string, idx int) error {
 	return s.api.DeleteUserSecrets(secretType, idx)
 }
 
-func (s *sender) GetUserSecrets(secretType string, idx int) (interface{}, error) {
-	resp, err := s.api.GetSecret(secretType, idx)
+func (s *sender) GetUserSecrets(secretType, user string, idx int) (interface{}, error) {
+	resp, err := s.api.GetSecret(secretType, user, idx)
 	var res interface{}
 	switch secretType {
 	case "credentials":

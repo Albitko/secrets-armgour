@@ -22,7 +22,7 @@ type repository interface {
 	UpdateText(index int, text entity.UserText) error
 
 	SelectUserData(data, string string) (interface{}, error)
-	GetUserData(data, id string) (interface{}, error)
+	GetUserData(data, id, user string) (interface{}, error)
 	DeleteUserData(data, id string) error
 
 	RegisterUser(login, pass string) error
@@ -106,8 +106,8 @@ func (p *processor) DeleteUserData(data, id string) error {
 	return err
 }
 
-func (p *processor) GetUserData(data, id string) (interface{}, error) {
-	res, err := p.repo.GetUserData(data, id)
+func (p *processor) GetUserData(data, id, user string) (interface{}, error) {
+	res, err := p.repo.GetUserData(data, id, user)
 	if data == "binary" {
 		binRes := res.(entity.UserBinary)
 		binRes.B64Content = base64.StdEncoding.EncodeToString([]byte(binRes.B64Content))

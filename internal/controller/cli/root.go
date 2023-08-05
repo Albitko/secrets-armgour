@@ -25,7 +25,7 @@ type sender interface {
 	CreateBinary(title, dataPath, meta string) error
 
 	ListUserSecrets(data, user string) (interface{}, error)
-	GetUserSecrets(secretType string, idx int) (interface{}, error)
+	GetUserSecrets(secretType, user string, idx int) (interface{}, error)
 	DeleteUserSecrets(secretType string, idx int) error
 	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error
 	EditBinary(index int, title, dataPath, meta string) error

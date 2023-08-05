@@ -319,7 +319,7 @@ func (d *postgres) DeleteUserData(data, id string) error {
 	return nil
 }
 
-func (d *postgres) GetUserData(data, id string) (interface{}, error) {
+func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	var res interface{}
@@ -328,7 +328,7 @@ func (d *postgres) GetUserData(data, id string) (interface{}, error) {
 	case "credentials":
 		var credential entity.UserCredentials
 		query := `
-		select service,service_login,service_password,meta  from credentials_data where id = $1;
+		select service,service_login,service_password,meta  from credentials_data where id = $1 and user_id = $2;
 		`
 		getSecret, err := d.db.PrepareContext(
 			ctx, query,
@@ -341,7 +341,7 @@ func (d *postgres) GetUserData(data, id string) (interface{}, error) {
 		}
 		defer getSecret.Close()
 
-		err = getSecret.QueryRowContext(ctx, id).Scan(
+		err = getSecret.QueryRowContext(ctx, id, user).Scan(
 			&credential.ServiceName,
 			&credential.ServiceLogin,
 			&credential.ServicePassword,
@@ -357,7 +357,7 @@ func (d *postgres) GetUserData(data, id string) (interface{}, error) {
 	case "binary":
 		var bin entity.UserBinary
 		query := `
-		select title,data_content,meta  from binary_data where id = $1;
+		select title,data_content,meta  from binary_data where id = $1 and user_id = $2;
 		`
 		getSecret, err := d.db.PrepareContext(
 			ctx, query,
@@ -370,7 +370,7 @@ func (d *postgres) GetUserData(data, id string) (interface{}, error) {
 		}
 		defer getSecret.Close()
 
-		err = getSecret.QueryRowContext(ctx, id).Scan(
+		err = getSecret.QueryRowContext(ctx, id, user).Scan(
 			&bin.Title,
 			&bin.B64Content,
 			&bin.Meta,
@@ -386,7 +386,7 @@ func (d *postgres) GetUserData(data, id string) (interface{}, error) {
 	case "text":
 		var text entity.UserText
 		query := `
-		select title,note,meta  from text_data where id = $1;
+		select title,note,meta  from text_data where id = $1 and user_id = $2;
 		`
 		getSecret, err := d.db.PrepareContext(
 			ctx, query,
@@ -399,7 +399,7 @@ func (d *postgres) GetUserData(data, id string) (interface{}, error) {
 		}
 		defer getSecret.Close()
 
-		err = getSecret.QueryRowContext(ctx, id).Scan(
+		err = getSecret.QueryRowContext(ctx, id, user).Scan(
 			&text.Title,
 			&text.Body,
 			&text.Meta,
@@ -414,7 +414,7 @@ func (d *postgres) GetUserData(data, id string) (interface{}, error) {
 	case "card":
 		var card entity.UserCard
 		query := `
-		select card_holder,card_number,card_validity_period,cvc_code,meta  from cards_data where id = $1;
+		select card_holder,card_number,card_validity_period,cvc_code,meta  from cards_data where id = $1 and user_id = $2;
 		`
 		getSecret, err := d.db.PrepareContext(
 			ctx, query,
@@ -427,7 +427,7 @@ func (d *postgres) GetUserData(data, id string) (interface{}, error) {
 		}
 		defer getSecret.Close()
 
-		err = getSecret.QueryRowContext(ctx, id).Scan(
+		err = getSecret.QueryRowContext(ctx, id, user).Scan(
 			&card.CardHolder,
 			&card.CardNumber,
 			&card.CardValidityPeriod,

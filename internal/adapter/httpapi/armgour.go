@@ -86,8 +86,9 @@ func (a *httpAPI) DeleteUserSecrets(secretType string, idx int) error {
 	return err
 }
 
-func (a *httpAPI) GetSecret(secretType string, idx int) (string, error) {
-	resp, err := a.client.R().Get(a.armgourURL + "/v1/secrets/get/" + secretType + "/" + strconv.Itoa(idx))
+func (a *httpAPI) GetSecret(secretType, user string, idx int) (string, error) {
+	resp, err := a.client.R().Get(
+		a.armgourURL + "/v1/secrets/get/" + secretType + "/" + strconv.Itoa(idx) + "/" + user)
 	return resp.String(), err
 }
 

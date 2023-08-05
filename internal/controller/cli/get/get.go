@@ -11,7 +11,7 @@ import (
 )
 
 type sender interface {
-	GetUserSecrets(secretType string, idx int) (interface{}, error)
+	GetUserSecrets(secretType, user string, idx int) (interface{}, error)
 }
 
 func New(s sender) *cobra.Command {
@@ -21,14 +21,15 @@ func New(s sender) *cobra.Command {
 		Use:   "get",
 		Short: "Get user saved secrets. Usage get --binary -i 23",
 		Run: func(cmd *cobra.Command, args []string) {
-			secrets, err := s.GetUserSecrets(data, index)
+			key, user, err := encrypt.GetCliSecrets()
+
+			secrets, err := s.GetUserSecrets(data, user, index)
 			if err != nil {
 				fmt.Println(err, secrets)
 			}
 			switch data {
 			case "credentials":
 				credentials := secrets.(entity.UserCredentials)
-				key, _, err := encrypt.GetCliSecrets()
 				decMeta, err := encrypt.DecryptMessage([]byte(key), credentials.Meta)
 				decService, err := encrypt.DecryptMessage([]byte(key), credentials.ServiceName)
 				decLogin, err := encrypt.DecryptMessage([]byte(key), credentials.ServiceLogin)
@@ -39,7 +40,6 @@ func New(s sender) *cobra.Command {
 				fmt.Println(decMeta, decService, decLogin, decPass)
 			case "binary":
 				bin := secrets.(entity.UserBinary)
-				key, _, err := encrypt.GetCliSecrets()
 				decMeta, err := encrypt.DecryptMessage([]byte(key), bin.Meta)
 				decTitle, err := encrypt.DecryptMessage([]byte(key), bin.Title)
 				decContent, err := encrypt.DecryptMessage([]byte(key), bin.B64Content)
@@ -56,7 +56,6 @@ func New(s sender) *cobra.Command {
 			case "text":
 				text := secrets.(entity.UserText)
 
-				key, _, err := encrypt.GetCliSecrets()
 				decMeta, err := encrypt.DecryptMessage([]byte(key), text.Meta)
 				decTitle, err := encrypt.DecryptMessage([]byte(key), text.Title)
 				decBody, err := encrypt.DecryptMessage([]byte(key), text.Body)
@@ -67,7 +66,6 @@ func New(s sender) *cobra.Command {
 			case "card":
 				card := secrets.(entity.UserCard)
 
-				key, _, err := encrypt.GetCliSecrets()
 				holderDec, err := encrypt.DecryptMessage([]byte(key), card.CardHolder)
 				numberDec, err := encrypt.DecryptMessage([]byte(key), card.CardNumber)
 				periodDec, err := encrypt.DecryptMessage([]byte(key), card.CardValidityPeriod)
