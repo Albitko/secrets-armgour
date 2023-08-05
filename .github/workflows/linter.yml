@@ -1,0 +1,27 @@
+name: golangci-lint
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+      - uses: actions/checkout@v3
+
+      - name: Install mockery
+        run: go install github.com/vektra/mockery/v2@v2.20.0
+
+      - name: Generate mocks
+        run: go generate ./...
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
