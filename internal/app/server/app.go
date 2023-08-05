@@ -6,20 +6,21 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/Albitko/secrets-armgour/internal/adapter/repository"
-	"github.com/Albitko/secrets-armgour/internal/config/server"
+	"github.com/Albitko/secrets-armgour/internal/config"
 	"github.com/Albitko/secrets-armgour/internal/controller/handler"
 	"github.com/Albitko/secrets-armgour/internal/secrets/processor"
 	"github.com/Albitko/secrets-armgour/internal/utils/logger"
 )
 
 func Run() {
-	appCfg, err := server.Config()
-	logger.Init()
+	log := logger.Init()
+	appCfg, err := config.NewServerFromEnv(log)
+
 	if err != nil {
 		panic(fmt.Errorf("can't configure application: %w", err))
 	}
 
-	repo, err := repository.New(appCfg.DatabaseDsn)
+	repo, err := repository.New(appCfg.DatabaseDsn, log)
 	defer repo.Close()
 	if err != nil {
 		panic(fmt.Errorf("can't connecto to DB: %w", err))

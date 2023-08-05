@@ -1,6 +1,7 @@
 package client
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
@@ -10,7 +11,9 @@ import (
 )
 
 func Run() {
-	serviceAPI := httpapi.New("http://localhost:8080")
+	serviceURL := flag.String("address", "http://localhost:8080", "Address of armGour service")
+	flag.Parse()
+	serviceAPI := httpapi.New(*serviceURL)
 	secretsSender := sender.New(serviceAPI)
 	c := cli.New(secretsSender)
 

@@ -8,9 +8,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var Zap *zap.SugaredLogger
-
-func Init() {
+func Init() *zap.SugaredLogger {
 	file, err := os.Create("armgour-server.log")
 	if err != nil {
 		panic(fmt.Errorf("error open file for logs: %w", err))
@@ -27,5 +25,5 @@ func Init() {
 		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), level),
 	)
 
-	Zap = zap.New(core).Sugar()
+	return zap.New(core).Sugar()
 }

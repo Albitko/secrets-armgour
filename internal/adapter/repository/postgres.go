@@ -12,7 +12,6 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/Albitko/secrets-armgour/internal/entity"
-	"github.com/Albitko/secrets-armgour/internal/utils/logger"
 )
 
 const schema = `
@@ -62,8 +61,14 @@ const (
 	uniqueViolationErr = "23505"
 )
 
+type logger interface {
+	Errorf(template string, args ...interface{})
+	Infof(template string, args ...interface{})
+}
+
 type postgres struct {
 	db *sql.DB
+	l  logger
 }
 
 func (d *postgres) GetUserPasswordHash(login string) (string, error) {
@@ -74,7 +79,7 @@ func (d *postgres) GetUserPasswordHash(login string) (string, error) {
 		ctx, `select password_hash from users_data where user_login = $1;`,
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error prepare context %s", err.Error(),
 		)
 		return "", err
@@ -83,7 +88,7 @@ func (d *postgres) GetUserPasswordHash(login string) (string, error) {
 
 	err = getSecret.QueryRowContext(ctx, login).Scan(&passHash)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error query execution %s", err.Error(),
 		)
 		return "", err
@@ -102,10 +107,10 @@ func (d *postgres) RegisterUser(login, pass string) error {
 		"INSERT INTO users_data (user_login, password_hash, created_at) VALUES ($1, $2, $3);",
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s preparing statement", err.Error())
+		d.l.Errorf("error: %s preparing statement", err.Error())
 		return err
 	}
-	defer closeStatement(insertCard)
+	defer d.closeStatement(insertCard)
 
 	_, err = insertCard.ExecContext(
 		ctx,
@@ -115,10 +120,10 @@ func (d *postgres) RegisterUser(login, pass string) error {
 	)
 	if err != nil && errors.As(err, &pgErr) {
 		if pgErr.Code == uniqueViolationErr {
-			logger.Zap.Info("login in use")
+			d.l.Infof("login in use")
 			return entity.ErrLoginAlreadyInUse
 		} else {
-			logger.Zap.Errorf("error: %s write user auth data", err.Error())
+			d.l.Errorf("error: %s write user auth data", err.Error())
 			return err
 		}
 	}
@@ -133,7 +138,7 @@ func (d *postgres) UpdateCard(index int, card entity.UserCard) error {
 		ctx, "UPDATE cards_data SET card_holder=$1, card_number=$2, card_validity_period=$3, cvc_code=$4, meta=$5 WHERE id=$6;",
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error creating statement %s", err.Error(),
 		)
 		return err
@@ -141,7 +146,7 @@ func (d *postgres) UpdateCard(index int, card entity.UserCard) error {
 	defer func(updateUser *sql.Stmt) {
 		err := updateUser.Close()
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error closing statement %s", err.Error(),
 			)
 		}
@@ -157,7 +162,7 @@ func (d *postgres) UpdateCard(index int, card entity.UserCard) error {
 		index,
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error executing query %s", err.Error(),
 		)
 		return err
@@ -173,7 +178,7 @@ func (d *postgres) UpdateCredentials(index int, credentials entity.UserCredentia
 		ctx, "UPDATE credentials_data SET service=$1, service_login=$2, service_password=$3, meta=$4 WHERE id=$5;",
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error creating statement %s", err.Error(),
 		)
 		return err
@@ -181,7 +186,7 @@ func (d *postgres) UpdateCredentials(index int, credentials entity.UserCredentia
 	defer func(updateUser *sql.Stmt) {
 		err := updateUser.Close()
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error closing statement %s", err.Error(),
 			)
 		}
@@ -196,7 +201,7 @@ func (d *postgres) UpdateCredentials(index int, credentials entity.UserCredentia
 		index,
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error executing query %s", err.Error(),
 		)
 		return err
@@ -212,7 +217,7 @@ func (d *postgres) UpdateBinary(index int, bin entity.UserBinary, data []byte) e
 		ctx, "UPDATE binary_data SET title=$1, data_content=$2, meta=$3 WHERE id=$4;",
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error creating statement %s", err.Error(),
 		)
 		return err
@@ -220,7 +225,7 @@ func (d *postgres) UpdateBinary(index int, bin entity.UserBinary, data []byte) e
 	defer func(updateUser *sql.Stmt) {
 		err := updateUser.Close()
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error closing statement %s", err.Error(),
 			)
 		}
@@ -234,7 +239,7 @@ func (d *postgres) UpdateBinary(index int, bin entity.UserBinary, data []byte) e
 		index,
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error executing query %s", err.Error(),
 		)
 		return err
@@ -250,7 +255,7 @@ func (d *postgres) UpdateText(index int, text entity.UserText) error {
 		ctx, "UPDATE text_data SET title=$1, note=$2, meta=$3 WHERE id=$4;",
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error creating statement %s", err.Error(),
 		)
 		return err
@@ -258,7 +263,7 @@ func (d *postgres) UpdateText(index int, text entity.UserText) error {
 	defer func(updateUser *sql.Stmt) {
 		err := updateUser.Close()
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error closing statement %s", err.Error(),
 			)
 		}
@@ -272,7 +277,7 @@ func (d *postgres) UpdateText(index int, text entity.UserText) error {
 		index,
 	)
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error executing query %s", err.Error(),
 		)
 		return err
@@ -299,13 +304,13 @@ func (d *postgres) DeleteUserData(data, id string) error {
 		query,
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s preparing statement", err.Error())
+		d.l.Errorf("error: %s preparing statement", err.Error())
 		return err
 	}
-	defer closeStatement(delStmnt)
+	defer d.closeStatement(delStmnt)
 	intId, err := strconv.Atoi(id)
 	if err != nil {
-		logger.Zap.Errorf("error: %s converting string to int", err.Error())
+		d.l.Errorf("error: %s converting string to int", err.Error())
 		return err
 	}
 	_, err = delStmnt.ExecContext(
@@ -313,7 +318,7 @@ func (d *postgres) DeleteUserData(data, id string) error {
 		intId,
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s write text data", err.Error())
+		d.l.Errorf("error: %s write text data", err.Error())
 		return err
 	}
 	return nil
@@ -334,7 +339,7 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 			ctx, query,
 		)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error prepare context %s", err.Error(),
 			)
 			return "", err
@@ -348,7 +353,7 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 			&credential.Meta,
 		)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error query execution %s", err.Error(),
 			)
 			return "", err
@@ -363,7 +368,7 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 			ctx, query,
 		)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error prepare context %s", err.Error(),
 			)
 			return "", err
@@ -376,7 +381,7 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 			&bin.Meta,
 		)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error query execution %s", err.Error(),
 			)
 			return "", err
@@ -392,7 +397,7 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 			ctx, query,
 		)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error prepare context %s", err.Error(),
 			)
 			return "", err
@@ -405,7 +410,7 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 			&text.Meta,
 		)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error query execution %s", err.Error(),
 			)
 			return "", err
@@ -420,7 +425,7 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 			ctx, query,
 		)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error prepare context %s", err.Error(),
 			)
 			return "", err
@@ -435,7 +440,7 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 			&card.Meta,
 		)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error query execution %s", err.Error(),
 			)
 			return "", err
@@ -446,10 +451,10 @@ func (d *postgres) GetUserData(data, id, user string) (interface{}, error) {
 	return res, nil
 }
 
-func closeRows(row *sql.Rows) {
+func (d *postgres) closeRows(row *sql.Rows) {
 	err := row.Close()
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error closing rows %s", err.Error(),
 		)
 	}
@@ -465,14 +470,14 @@ func (d *postgres) queryRows(ctx context.Context, query string, args ...interfac
 	defer func(statement *sql.Stmt) {
 		err := statement.Close()
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error while closing statement %s", err.Error(),
 			)
 		}
 	}(statement)
 
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error creating statement %s", err.Error(),
 		)
 		return rows, err
@@ -480,14 +485,14 @@ func (d *postgres) queryRows(ctx context.Context, query string, args ...interfac
 	rows, err = statement.QueryContext(ctx, args...)
 
 	if err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error query execution %s", err.Error(),
 		)
 		return rows, err
 	}
 
 	if err = rows.Err(); err != nil {
-		logger.Zap.Errorf(
+		d.l.Errorf(
 			"error row %s", err.Error(),
 		)
 		return rows, err
@@ -511,7 +516,7 @@ func (d *postgres) SelectUserData(data, user string) (interface{}, error) {
 		`
 		rows, err = d.queryRows(ctx, query, user)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error query execution %s", err.Error(),
 			)
 			return res, err
@@ -532,7 +537,7 @@ func (d *postgres) SelectUserData(data, user string) (interface{}, error) {
 		`
 		rows, err = d.queryRows(ctx, query, user)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error query execution %s", err.Error(),
 			)
 			return res, err
@@ -553,7 +558,7 @@ func (d *postgres) SelectUserData(data, user string) (interface{}, error) {
 		`
 		rows, err = d.queryRows(ctx, query, user)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error query execution %s", err.Error(),
 			)
 			return res, err
@@ -575,7 +580,7 @@ func (d *postgres) SelectUserData(data, user string) (interface{}, error) {
 		`
 		rows, err = d.queryRows(ctx, query, user)
 		if err != nil {
-			logger.Zap.Errorf(
+			d.l.Errorf(
 				"error query execution %s", err.Error(),
 			)
 			return res, err
@@ -589,19 +594,19 @@ func (d *postgres) SelectUserData(data, user string) (interface{}, error) {
 		}
 		res = cards
 	}
-	defer closeRows(rows)
+	defer d.closeRows(rows)
 
 	return res, nil
 }
 
-func closeStatement(statement *sql.Stmt) {
+func (d *postgres) closeStatement(statement *sql.Stmt) {
 	if statement == nil {
-		logger.Zap.Errorf("error: nil statement")
+		d.l.Errorf("error: nil statement")
 		return
 	}
 	err := statement.Close()
 	if err != nil {
-		logger.Zap.Errorf("error: %s closing statement", err.Error())
+		d.l.Errorf("error: %s closing statement", err.Error())
 	}
 }
 
@@ -615,10 +620,10 @@ func (d *postgres) InsertCard(card entity.UserCard, user string) error {
 		"INSERT INTO cards_data (user_id,card_holder, card_number, card_validity_period, cvc_code, meta, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7);",
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s preparing statement", err.Error())
+		d.l.Errorf("error: %s preparing statement", err.Error())
 		return err
 	}
-	defer closeStatement(insertCard)
+	defer d.closeStatement(insertCard)
 
 	_, err = insertCard.ExecContext(
 		ctx,
@@ -631,7 +636,7 @@ func (d *postgres) InsertCard(card entity.UserCard, user string) error {
 		createdAt,
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s write card data", err.Error())
+		d.l.Errorf("error: %s write card data", err.Error())
 		return err
 	}
 	return nil
@@ -647,10 +652,10 @@ func (d *postgres) InsertCredentials(credentials entity.UserCredentials, user st
 		"INSERT INTO credentials_data (user_id,service, service_login, service_password,  meta, created_at) VALUES ($1, $2, $3, $4, $5, $6);",
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s preparing statement", err.Error())
+		d.l.Errorf("error: %s preparing statement", err.Error())
 		return err
 	}
-	defer closeStatement(insertCredentials)
+	defer d.closeStatement(insertCredentials)
 
 	_, err = insertCredentials.ExecContext(
 		ctx,
@@ -662,7 +667,7 @@ func (d *postgres) InsertCredentials(credentials entity.UserCredentials, user st
 		createdAt,
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s write credentials data", err.Error())
+		d.l.Errorf("error: %s write credentials data", err.Error())
 		return err
 	}
 	return nil
@@ -678,10 +683,10 @@ func (d *postgres) InsertBinary(bin entity.UserBinary, data []byte, user string)
 		"INSERT INTO binary_data (user_id,title, data_content, meta, created_at) VALUES ($1, $2, $3, $4, $5);",
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s preparing statement", err.Error())
+		d.l.Errorf("error: %s preparing statement", err.Error())
 		return err
 	}
-	defer closeStatement(insertBinary)
+	defer d.closeStatement(insertBinary)
 
 	_, err = insertBinary.ExecContext(
 		ctx,
@@ -692,7 +697,7 @@ func (d *postgres) InsertBinary(bin entity.UserBinary, data []byte, user string)
 		createdAt,
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s write binary data", err.Error())
+		d.l.Errorf("error: %s write binary data", err.Error())
 		return err
 	}
 	return nil
@@ -708,10 +713,10 @@ func (d *postgres) InsertText(text entity.UserText, user string) error {
 		"INSERT INTO text_data (user_id,title, note, meta, created_at) VALUES ($1, $2, $3, $4, $5);",
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s preparing statement", err.Error())
+		d.l.Errorf("error: %s preparing statement", err.Error())
 		return err
 	}
-	defer closeStatement(insertText)
+	defer d.closeStatement(insertText)
 
 	_, err = insertText.ExecContext(
 		ctx,
@@ -722,7 +727,7 @@ func (d *postgres) InsertText(text entity.UserText, user string) error {
 		createdAt,
 	)
 	if err != nil {
-		logger.Zap.Errorf("error: %s write text data", err.Error())
+		d.l.Errorf("error: %s write text data", err.Error())
 		return err
 	}
 	return nil
@@ -734,21 +739,22 @@ func (d *postgres) Close() {
 		return
 	}
 }
-func New(psqlConn string) (*postgres, error) {
-	db, err := sql.Open("pgx", psqlConn)
+func New(dsn string, l logger) (*postgres, error) {
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
-		logger.Zap.Errorf("error: %s open postgres", err.Error())
+		l.Errorf("error: %s open postgres", err.Error())
 		return nil, err
 	}
 	if err = db.Ping(); err != nil {
-		logger.Zap.Errorf("error: %s ping postgres", err.Error())
+		l.Errorf("error: %s ping postgres", err.Error())
 		return nil, err
 	}
 	if _, err = db.Exec(schema); err != nil {
-		logger.Zap.Errorf("error: %s update schema", err.Error())
+		l.Errorf("error: %s update schema", err.Error())
 		return nil, err
 	}
 	return &postgres{
+		l:  l,
 		db: db,
 	}, nil
 }
