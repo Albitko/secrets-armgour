@@ -20,9 +20,6 @@ func New(s sender) *cobra.Command {
 	editCmd := &cobra.Command{
 		Use:   "edit",
 		Short: "Edit secret data",
-		Run: func(cmd *cobra.Command, args []string) {
-			//c.sender.List
-		},
 	}
 	editCmd.AddCommand(credentials.New(s))
 	editCmd.AddCommand(binary.New(s))

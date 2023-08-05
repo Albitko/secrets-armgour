@@ -21,6 +21,7 @@ func New(s sender) *cobra.Command {
 			if err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("Binary updated successfully.")
 		},
 	}
 	editCmd.PersistentFlags().StringVarP(

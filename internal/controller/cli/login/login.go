@@ -51,7 +51,7 @@ func New(s sender) *cobra.Command {
 				return
 			}
 
-			fmt.Println("String written to file successfully.")
+			fmt.Println("Login successfully.")
 		},
 	}
 	loginCmd.PersistentFlags().StringVarP(

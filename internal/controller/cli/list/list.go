@@ -38,7 +38,7 @@ func New(s sender) *cobra.Command {
 					if err != nil {
 						fmt.Println(err)
 					}
-					fmt.Println(c.Id, decService, decMeta)
+					fmt.Println("ID:", c.Id, "Service name:", decService, "Description:", decMeta)
 				}
 			case "binary":
 				bin := res.([]entity.CutBinary)
@@ -48,7 +48,7 @@ func New(s sender) *cobra.Command {
 					if err != nil {
 						fmt.Println(err)
 					}
-					fmt.Println(b.Id, decTitle, decMeta)
+					fmt.Println("ID:", b.Id, "Binary name:", decTitle, "Description:", decMeta)
 				}
 			case "text":
 				texts := res.([]entity.CutText)
@@ -58,7 +58,7 @@ func New(s sender) *cobra.Command {
 					if err != nil {
 						fmt.Println(err)
 					}
-					fmt.Println(t.Id, decTitle, decMeta)
+					fmt.Println("ID:", t.Id, "Note title:", decTitle, "Description:", decMeta)
 				}
 			case "card":
 				cards := res.([]entity.CutCard)
@@ -69,7 +69,7 @@ func New(s sender) *cobra.Command {
 					if err != nil {
 						fmt.Println(err)
 					}
-					fmt.Println(c.Id, numberDec, metaDec)
+					fmt.Println("ID:", c.Id, "Card number:", numberDec, "Description:", metaDec)
 				}
 			}
 		},

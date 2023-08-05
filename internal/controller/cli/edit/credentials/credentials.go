@@ -28,6 +28,8 @@ func New(s sender) *cobra.Command {
 			if err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("Credentials updated successfully.")
+
 		},
 	}
 	editCmd.PersistentFlags().StringVarP(

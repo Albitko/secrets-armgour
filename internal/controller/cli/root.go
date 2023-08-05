@@ -1,10 +1,6 @@
 package cli
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
 
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/create"
@@ -15,7 +11,6 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/login"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/logout"
 	"github.com/Albitko/secrets-armgour/internal/controller/cli/register"
-	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
 type sender interface {
@@ -42,22 +37,9 @@ type cliCommands struct {
 }
 
 func New(s sender) *cliCommands {
-	var cliSecrets entity.CliSecrets
 	rootCmd := &cobra.Command{
 		Use:   "armgour-cli",
 		Short: "Client for storing your secrets in armGOur service",
-		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			content, err := os.ReadFile(".token")
-			if err != nil {
-				if os.IsNotExist(err) {
-					fmt.Println("AUTH please")
-				} else {
-					fmt.Println("Error reading file:", err)
-				}
-				return
-			}
-			err = json.Unmarshal(content, &cliSecrets)
-		},
 	}
 
 	rootCmd.AddCommand(login.New(s))

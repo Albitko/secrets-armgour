@@ -12,7 +12,6 @@ func New() *cobra.Command {
 		Use:   "logout",
 		Short: "Logout from armGOur service",
 		Run: func(cmd *cobra.Command, args []string) {
-			//c.sender.Logout()
 			err := os.Remove(".token")
 			if err != nil {
 				fmt.Println("Error removing file:", err)

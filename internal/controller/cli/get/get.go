@@ -38,7 +38,8 @@ func New(s sender) *cobra.Command {
 				if err != nil {
 					fmt.Println(err)
 				}
-				fmt.Println(decMeta, decService, decLogin, decPass)
+				fmt.Println(
+					"Service name:", decService, "Login:", decLogin, "Password:", decPass, "Description:", decMeta)
 			case "binary":
 				bin := secrets.(entity.UserBinary)
 				decMeta, err := encrypt.DecryptMessage([]byte(key), bin.Meta)
@@ -68,7 +69,7 @@ func New(s sender) *cobra.Command {
 				if err != nil {
 					fmt.Println(err)
 				}
-				fmt.Println(decTitle, decBody, decMeta)
+				fmt.Println("Note title", decTitle, "Note text", decBody, "Description:", decMeta)
 			case "card":
 				card := secrets.(entity.UserCard)
 
@@ -81,7 +82,8 @@ func New(s sender) *cobra.Command {
 				if err != nil {
 					fmt.Println(err)
 				}
-				fmt.Println(holderDec, numberDec, periodDec, cvcDec, metaDec)
+				fmt.Println("Card holder", holderDec,
+					"Card number", numberDec, "Validity period", periodDec, "CVC", cvcDec, "Description:", metaDec)
 			}
 		},
 	}

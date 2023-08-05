@@ -27,6 +27,7 @@ func New(s sender) *cobra.Command {
 			if err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("Text data updated successfully.")
 		},
 	}
 	editCmd.PersistentFlags().StringVarP(
