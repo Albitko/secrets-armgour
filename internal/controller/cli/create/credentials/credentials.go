@@ -27,6 +27,7 @@ func New(s sender) *cobra.Command {
 			if err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("Credentials successfully written")
 		},
 	}
 	createCmd.PersistentFlags().StringVarP(

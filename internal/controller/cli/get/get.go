@@ -3,6 +3,7 @@ package get
 import (
 	"encoding/base64"
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -46,13 +47,18 @@ func New(s sender) *cobra.Command {
 				if err != nil {
 					fmt.Println(err)
 				}
-				fmt.Println(decTitle, decContent, decMeta)
-				fmt.Println("Binary saved in .. with name ..")
-				rawDecodedText, err := base64.StdEncoding.DecodeString(decContent)
+				fmt.Println("Title:", decTitle, "Description:", decMeta)
+
+				rawDecoded, err := base64.StdEncoding.DecodeString(decContent)
 				if err != nil {
-					panic(err)
+					fmt.Println(err)
 				}
-				fmt.Println(string(rawDecodedText))
+				err = os.WriteFile(decTitle+".bin", rawDecoded, 0644)
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Println(
+					"Binary with name " + decTitle + " and meta " + decMeta + " saved as " + decTitle + ".bin")
 			case "text":
 				text := secrets.(entity.UserText)
 

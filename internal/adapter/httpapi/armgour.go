@@ -1,7 +1,6 @@
 package httpapi
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/go-resty/resty/v2"
@@ -114,8 +113,7 @@ func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, me
 		ServicePassword: servicePassword,
 		Meta:            meta,
 	}
-	resp, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/secrets/credentials/" + user)
-	fmt.Println(resp.String())
+	_, err := a.client.R().SetBody(userCredentials).Post(a.armgourURL + "/v1/secrets/credentials/" + user)
 	return err
 }
 
@@ -125,8 +123,7 @@ func (a *httpAPI) CreateText(title, body, meta, user string) error {
 		Body:  body,
 		Meta:  meta,
 	}
-	resp, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/text/" + user)
-	fmt.Println(resp.String())
+	_, err := a.client.R().SetBody(text).Post(a.armgourURL + "/v1/secrets/text/" + user)
 	return err
 }
 
@@ -138,8 +135,7 @@ func (a *httpAPI) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode
 		CvcCode:            cvcCode,
 		Meta:               meta,
 	}
-	resp, err := a.client.R().SetBody(card).Post(a.armgourURL + "/v1/secrets/card/" + user)
-	fmt.Println(resp.String())
+	_, err := a.client.R().SetBody(card).Post(a.armgourURL + "/v1/secrets/card/" + user)
 	return err
 }
 

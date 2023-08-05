@@ -28,6 +28,7 @@ func New(s sender) *cobra.Command {
 			if err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("Card data successfully written")
 		},
 	}
 	createCmd.PersistentFlags().StringVarP(

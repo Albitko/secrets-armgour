@@ -20,6 +20,7 @@ func New(s sender) *cobra.Command {
 			if err != nil {
 				fmt.Println(err)
 			}
+			fmt.Println("Binary data successfully written")
 		},
 	}
 	createCmd.PersistentFlags().StringVarP(

@@ -39,7 +39,6 @@ func New(s sender) *cobra.Command {
 
 			data := entity.CliSecrets{
 				UserName: login,
-				Token:    "TESTTOKEN",
 				Key:      encKey,
 			}
 			jsonData, err := json.Marshal(data)
@@ -53,7 +52,7 @@ func New(s sender) *cobra.Command {
 				return
 			}
 
-			fmt.Println("String written to file successfully.")
+			fmt.Println("Successfully registered.")
 		},
 	}
 	registerCmd.PersistentFlags().StringVarP(

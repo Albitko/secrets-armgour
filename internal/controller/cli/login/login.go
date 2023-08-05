@@ -38,7 +38,6 @@ func New(s sender) *cobra.Command {
 
 			data := entity.CliSecrets{
 				UserName: login,
-				Token:    "TESTTOKEN",
 				Key:      encKey,
 			}
 			jsonData, err := json.Marshal(data)
