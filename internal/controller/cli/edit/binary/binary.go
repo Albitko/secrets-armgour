@@ -32,12 +32,12 @@ func New(s sender) *cobra.Command {
 		&meta, "meta", "m", "", "Additional info about secret")
 	err := editCmd.MarkPersistentFlagRequired("path")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	err = editCmd.MarkPersistentFlagRequired("title")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	editCmd.Flags().IntVarP(

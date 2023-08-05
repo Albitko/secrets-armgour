@@ -37,28 +37,28 @@ func New(s sender) *cobra.Command {
 		&cardHolder, "holder", "l", "", "Card holder")
 	err := editCmd.MarkPersistentFlagRequired("holder")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	editCmd.PersistentFlags().StringVarP(
 		&cardNumber, "number", "n", "", "Card number")
 	err = editCmd.MarkPersistentFlagRequired("number")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	editCmd.PersistentFlags().StringVarP(
 		&cardValidityPeriod, "period", "p", "", "Card validity period")
 	err = editCmd.MarkPersistentFlagRequired("period")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	editCmd.PersistentFlags().StringVarP(
 		&cvcCode, "cvc", "c", "", "CVC code")
 	err = editCmd.MarkPersistentFlagRequired("cvc")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	editCmd.PersistentFlags().StringVarP(

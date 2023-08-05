@@ -39,7 +39,7 @@ func New(s sender) *cobra.Command {
 	createCmd.PersistentFlags().StringVarP(
 		&meta, "meta", "m", "", "Additional info about secret")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	return createCmd

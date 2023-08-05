@@ -31,12 +31,12 @@ func New(s sender) *cobra.Command {
 		&meta, "meta", "m", "", "Additional info about secret")
 	err := createCmd.MarkPersistentFlagRequired("path")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	err = createCmd.MarkPersistentFlagRequired("title")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	return createCmd

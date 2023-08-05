@@ -58,14 +58,14 @@ func New(s sender) *cobra.Command {
 		&login, "login", "l", "", "User login")
 	err := loginCmd.MarkPersistentFlagRequired("login")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	loginCmd.PersistentFlags().StringVarP(
 		&password, "password", "p", "", "User password")
 	err = loginCmd.MarkPersistentFlagRequired("password")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	loginCmd.MarkFlagsRequiredTogether("login", "password")

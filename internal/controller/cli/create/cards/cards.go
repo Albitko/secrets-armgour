@@ -35,28 +35,28 @@ func New(s sender) *cobra.Command {
 		&cardHolder, "holder", "l", "", "Card holder")
 	err := createCmd.MarkPersistentFlagRequired("holder")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	createCmd.PersistentFlags().StringVarP(
 		&cardNumber, "number", "n", "", "Card number")
 	err = createCmd.MarkPersistentFlagRequired("number")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	createCmd.PersistentFlags().StringVarP(
 		&cardValidityPeriod, "period", "p", "", "Card validity period")
 	err = createCmd.MarkPersistentFlagRequired("period")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	createCmd.PersistentFlags().StringVarP(
 		&cvcCode, "cvc", "c", "", "CVC code")
 	err = createCmd.MarkPersistentFlagRequired("cvc")
 	if err != nil {
-		// TODO
+		fmt.Println(err)
 		return nil
 	}
 	createCmd.PersistentFlags().StringVarP(
