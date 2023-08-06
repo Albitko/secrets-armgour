@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -346,4 +347,45 @@ func TestBinaryCreate(t *testing.T) {
 	handler.BinaryCreate(ctx)
 	mockProcessor.AssertExpectations(t)
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestTextEdit(t *testing.T) {
+	textEditTests := []struct {
+		name         string
+		body         string
+		url          string
+		returnErr    error
+		expectedCode int
+	}{
+		{
+			name:         "Edit text: Succes",
+			body:         `{"text": "updated text"}`,
+			url:          "/text/edit/123",
+			returnErr:    nil,
+			expectedCode: 200,
+		},
+		{
+			name:         "Edit text: Fail",
+			body:         ``,
+			url:          "/text/edit/123",
+			returnErr:    fmt.Errorf("some err"),
+			expectedCode: 500,
+		},
+	}
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := handler{processor: mockProcessor}
+	for _, tt := range textEditTests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockProcessor.On("TextEdit", mock.Anything, mock.Anything, mock.Anything).
+				Return(tt.returnErr)
+			req, _ := http.NewRequest("POST", tt.url, strings.NewReader(tt.body))
+			recorder := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(recorder)
+			ctx.Request = req
+			handler.TextEdit(ctx)
+			mockProcessor.AssertExpectations(t)
+			assert.Equal(t, tt.expectedCode, ctx.Writer.Status())
+		})
+	}
+
 }
