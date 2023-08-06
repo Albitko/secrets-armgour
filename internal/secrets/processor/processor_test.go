@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
@@ -225,4 +226,65 @@ func Test_BinaryCreation(t *testing.T) {
 			assert.Equal(t, tt.expectedErr, err)
 		})
 	}
+}
+
+func TestCardCreation(t *testing.T) {
+	mockRepo := newMockRepository(t)
+	processor := &processor{
+		repo: mockRepo,
+	}
+	mockRepo.On("InsertCard", mock.Anything, mock.Anything, mock.Anything).
+		Return(nil).Once()
+	err := processor.CardCreation(context.TODO(), entity.UserCard{}, "user")
+	mockRepo.AssertExpectations(t)
+	assert.NoError(t, err)
+}
+
+func Test_ListUserData(t *testing.T) {
+	mockRepo := newMockRepository(t)
+	processor := &processor{
+		repo: mockRepo,
+	}
+	mockRepo.On("SelectUserData", mock.Anything, mock.Anything, mock.Anything).
+		Return(nil, nil).Once()
+	result, err := processor.ListUserData(context.TODO(), "data", "user")
+	mockRepo.AssertExpectations(t)
+	assert.NoError(t, err)
+	assert.Nil(t, result)
+}
+
+func TestCredentialsCreation(t *testing.T) {
+	mockRepo := newMockRepository(t)
+	processor := &processor{
+		repo: mockRepo,
+	}
+	mockRepo.On("InsertCredentials", mock.Anything, mock.Anything, mock.Anything).
+		Return(nil, nil).Once()
+	err := processor.CredentialsCreation(context.TODO(), entity.UserCredentials{}, "user")
+	mockRepo.AssertExpectations(t)
+	assert.NoError(t, err)
+}
+
+func TestTextCreation(t *testing.T) {
+	mockRepo := newMockRepository(t)
+	processor := &processor{
+		repo: mockRepo,
+	}
+	mockRepo.On("InsertText", mock.Anything, mock.Anything, mock.Anything).
+		Return(nil, nil).Once()
+	err := processor.TextCreation(context.TODO(), entity.UserText{}, "user")
+	mockRepo.AssertExpectations(t)
+	assert.NoError(t, err)
+}
+
+func TestDeleteUserData(t *testing.T) {
+	mockRepo := newMockRepository(t)
+	processor := &processor{
+		repo: mockRepo,
+	}
+	mockRepo.On("DeleteUserData", mock.Anything, "binary", "user").
+		Return(nil, nil).Once()
+	err := processor.DeleteUserData(context.TODO(), "binary", "user")
+	mockRepo.AssertExpectations(t)
+	assert.NoError(t, err)
 }
