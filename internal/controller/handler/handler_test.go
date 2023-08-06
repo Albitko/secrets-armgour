@@ -131,6 +131,26 @@ func TestRegister_InternalServerError(t *testing.T) {
 	mockProcessor.AssertCalled(t, "RegisterUser", mock.Anything, auth)
 }
 
+func TestLogin_InternalServerError(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	auth := entity.UserAuth{
+		Login:    "user",
+		Password: "password",
+	}
+
+	body, _ := json.Marshal(auth)
+	ctx.Request, _ = http.NewRequest(http.MethodPost, "/v1/user/login", bytes.NewReader(body))
+	mockProcessor.On("LoginUser", mock.Anything, auth).Return(errors.New("some error"))
+	h.Login(ctx)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	mockProcessor.AssertCalled(t, "LoginUser", mock.Anything, auth)
+}
+
 func TestList_Success(t *testing.T) {
 	listTests := []struct {
 		name         string
