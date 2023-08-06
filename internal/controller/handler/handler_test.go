@@ -360,14 +360,14 @@ func TestTextEdit(t *testing.T) {
 		{
 			name:         "Edit text: Succes",
 			body:         `{"text": "updated text"}`,
-			url:          "/text/edit/123",
+			url:          "/v1/secrets/text/1",
 			returnErr:    nil,
 			expectedCode: 200,
 		},
 		{
 			name:         "Edit text: Fail",
 			body:         ``,
-			url:          "/text/edit/123",
+			url:          "/v1/secrets/text/1",
 			returnErr:    fmt.Errorf("some err"),
 			expectedCode: 500,
 		},
@@ -378,11 +378,132 @@ func TestTextEdit(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			mockProcessor.On("TextEdit", mock.Anything, mock.Anything, mock.Anything).
 				Return(tt.returnErr)
-			req, _ := http.NewRequest("POST", tt.url, strings.NewReader(tt.body))
+			req, _ := http.NewRequest("PUT", tt.url, strings.NewReader(tt.body))
 			recorder := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(recorder)
 			ctx.Request = req
 			handler.TextEdit(ctx)
+			mockProcessor.AssertExpectations(t)
+			assert.Equal(t, tt.expectedCode, ctx.Writer.Status())
+		})
+	}
+}
+
+func TestCardsEdit(t *testing.T) {
+	cardsEditTests := []struct {
+		name         string
+		body         string
+		url          string
+		returnErr    error
+		expectedCode int
+	}{
+		{
+			name:         "Edit cards: Succes",
+			body:         `{"test": "test"}`,
+			url:          "/v1/secrets/cards/:id",
+			returnErr:    nil,
+			expectedCode: 200,
+		},
+		{
+			name:         "Edit cards: Fail",
+			body:         ``,
+			url:          "/v1/secrets/card/1",
+			returnErr:    fmt.Errorf("some err"),
+			expectedCode: 500,
+		},
+	}
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := handler{processor: mockProcessor}
+	for _, tt := range cardsEditTests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockProcessor.On("CardEdit", mock.Anything, mock.Anything, mock.Anything).
+				Return(tt.returnErr)
+			req, _ := http.NewRequest("PUT", tt.url, strings.NewReader(tt.body))
+			recorder := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(recorder)
+			ctx.Request = req
+			handler.CardEdit(ctx)
+			mockProcessor.AssertExpectations(t)
+			assert.Equal(t, tt.expectedCode, ctx.Writer.Status())
+		})
+	}
+
+}
+
+func TestBinaryEdit(t *testing.T) {
+	binaryEditTests := []struct {
+		name         string
+		body         string
+		url          string
+		returnErr    error
+		expectedCode int
+	}{
+		{
+			name:         "Edit binary: Succes",
+			body:         `{"test": "test"}`,
+			url:          "/v1/secrets/binary/:id",
+			returnErr:    nil,
+			expectedCode: 200,
+		},
+		{
+			name:         "Edit binary: Fail",
+			body:         ``,
+			url:          "/v1/secrets/binary/1",
+			returnErr:    fmt.Errorf("some err"),
+			expectedCode: 500,
+		},
+	}
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := handler{processor: mockProcessor}
+	for _, tt := range binaryEditTests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockProcessor.On("BinaryEdit", mock.Anything, mock.Anything, mock.Anything).
+				Return(tt.returnErr)
+			req, _ := http.NewRequest("PUT", tt.url, strings.NewReader(tt.body))
+			recorder := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(recorder)
+			ctx.Request = req
+			handler.BinaryEdit(ctx)
+			mockProcessor.AssertExpectations(t)
+			assert.Equal(t, tt.expectedCode, ctx.Writer.Status())
+		})
+	}
+}
+
+func TestCredentialsEdit(t *testing.T) {
+	binaryEditTests := []struct {
+		name         string
+		body         string
+		url          string
+		returnErr    error
+		expectedCode int
+	}{
+		{
+			name:         "Edit binary: Succes",
+			body:         `{"test": "test"}`,
+			url:          "/v1/secrets/credentials/:id",
+			returnErr:    nil,
+			expectedCode: 200,
+		},
+		{
+			name:         "Edit binary: Fail",
+			body:         ``,
+			url:          "/v1/secrets/credentials/1",
+			returnErr:    fmt.Errorf("some err"),
+			expectedCode: 500,
+		},
+	}
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := handler{processor: mockProcessor}
+	for _, tt := range binaryEditTests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockProcessor.On("CredentialsEdit", mock.Anything, mock.Anything, mock.Anything).
+				Return(tt.returnErr)
+			req, _ := http.NewRequest("PUT", tt.url, strings.NewReader(tt.body))
+			recorder := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(recorder)
+			ctx.Request = req
+			handler.CredentialsEdit(ctx)
 			mockProcessor.AssertExpectations(t)
 			assert.Equal(t, tt.expectedCode, ctx.Writer.Status())
 		})
