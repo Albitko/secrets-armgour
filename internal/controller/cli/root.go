@@ -36,6 +36,7 @@ type cliCommands struct {
 	Cmd *cobra.Command
 }
 
+// New - return main command for cobra cli
 func New(s sender) *cliCommands {
 	rootCmd := &cobra.Command{
 		Use:   "armgour-cli",

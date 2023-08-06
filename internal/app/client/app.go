@@ -10,6 +10,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/secrets/sender"
 )
 
+// Run - client application
 func Run() {
 	serviceURL := flag.String("address", "http://localhost:8080", "Address of armGour service")
 	version := flag.String("version", "0.1.0", "Version of armGour service")

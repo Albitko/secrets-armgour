@@ -9,6 +9,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
+// GetUserData - return secret for user by id
 func (d *postgres) GetUserData(ctx context.Context, data, id, user string) (interface{}, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -136,6 +137,7 @@ func (d *postgres) GetUserData(ctx context.Context, data, id, user string) (inte
 	return res, nil
 }
 
+// SelectUserData - return users secrets for list command
 func (d *postgres) SelectUserData(ctx context.Context, data, user string) (interface{}, error) {
 	var rows *sql.Rows
 	var err error

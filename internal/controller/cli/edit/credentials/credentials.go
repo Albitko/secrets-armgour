@@ -12,6 +12,7 @@ type sender interface {
 	EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error
 }
 
+// New - return command for credentials edit
 func New(s sender) *cobra.Command {
 	var serviceName, serviceLogin, servicePassword, meta string
 	var index int

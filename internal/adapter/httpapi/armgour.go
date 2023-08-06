@@ -1,3 +1,5 @@
+// Package httpapi - package with clients for
+// armGour server
 package httpapi
 
 import (
@@ -13,6 +15,7 @@ type httpAPI struct {
 	client     *resty.Client
 }
 
+// LoginUser - method that authorize user
 func (a *httpAPI) LoginUser(login, password string) error {
 	userCredentials := entity.UserAuth{
 		Login:    login,
@@ -25,6 +28,7 @@ func (a *httpAPI) LoginUser(login, password string) error {
 	return err
 }
 
+// RegisterUser - method that register user in service
 func (a *httpAPI) RegisterUser(login, password string) error {
 	userCredentials := entity.UserAuth{
 		Login:    login,
@@ -37,6 +41,7 @@ func (a *httpAPI) RegisterUser(login, password string) error {
 	return err
 }
 
+// EditCredentials - method that provide credentials entity modification
 func (a *httpAPI) EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error {
 	userCredentials := entity.UserCredentials{
 		ServiceLogin:    serviceLogin,
@@ -48,6 +53,7 @@ func (a *httpAPI) EditCredentials(index int, serviceName, serviceLogin, serviceP
 	return err
 }
 
+// EditText - - method that provide text entity modification
 func (a *httpAPI) EditText(index int, title, body, meta string) error {
 	text := entity.UserText{
 		Title: title,
@@ -58,6 +64,7 @@ func (a *httpAPI) EditText(index int, title, body, meta string) error {
 	return err
 }
 
+// EditCard - method that provide cards entity modification
 func (a *httpAPI) EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
 	card := entity.UserCard{
 		CardHolder:         cardHolder,
@@ -70,6 +77,7 @@ func (a *httpAPI) EditCard(index int, cardHolder, cardNumber, cardValidityPeriod
 	return err
 }
 
+// EditBinary - method that provide binary entity modification
 func (a *httpAPI) EditBinary(index int, title, b64Content, meta string) error {
 	binary := entity.UserBinary{
 		Title:      title,
@@ -80,22 +88,26 @@ func (a *httpAPI) EditBinary(index int, title, b64Content, meta string) error {
 	return err
 }
 
+// DeleteUserSecrets - method that delete users secret
 func (a *httpAPI) DeleteUserSecrets(secretType string, idx int) error {
 	_, err := a.client.R().Delete(a.armgourURL + "/v1/secrets/" + secretType + "/" + strconv.Itoa(idx))
 	return err
 }
 
+// GetSecret - method that return user secret
 func (a *httpAPI) GetSecret(secretType, user string, idx int) (string, error) {
 	resp, err := a.client.R().Get(
 		a.armgourURL + "/v1/secrets/get/" + secretType + "/" + strconv.Itoa(idx) + "/" + user)
 	return resp.String(), err
 }
 
+// ListSecrets - method that return users secrets list
 func (a *httpAPI) ListSecrets(data, user string) (string, error) {
 	resp, err := a.client.R().Get(a.armgourURL + "/v1/secrets/list/" + data + "/" + user)
 	return resp.String(), err
 }
 
+// CreateBinary - method that save binary in service
 func (a *httpAPI) CreateBinary(title, b64Content, meta, user string) error {
 	binary := entity.UserBinary{
 		Title:      title,
@@ -106,6 +118,7 @@ func (a *httpAPI) CreateBinary(title, b64Content, meta, user string) error {
 	return err
 }
 
+// SendCredentials - save service credentials
 func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, meta, user string) error {
 	userCredentials := entity.UserCredentials{
 		ServiceLogin:    serviceLogin,
@@ -117,6 +130,7 @@ func (a *httpAPI) SendCredentials(serviceName, serviceLogin, servicePassword, me
 	return err
 }
 
+// CreateText - save text in service
 func (a *httpAPI) CreateText(title, body, meta, user string) error {
 	text := entity.UserText{
 		Title: title,
@@ -127,6 +141,7 @@ func (a *httpAPI) CreateText(title, body, meta, user string) error {
 	return err
 }
 
+// CreateCard - save card data in service
 func (a *httpAPI) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error {
 	card := entity.UserCard{
 		CardHolder:         cardHolder,

@@ -1,3 +1,5 @@
+// Package processor - main use case of server side
+// process all information with client interconnection
 package processor
 
 import (
@@ -35,6 +37,7 @@ type processor struct {
 	repo repository
 }
 
+// LoginUser - process login requests to repository
 func (p *processor) LoginUser(ctx context.Context, auth entity.UserAuth) error {
 	storedHash, err := p.repo.GetUserPasswordHash(ctx, auth.Login)
 	if err != nil {
@@ -49,6 +52,7 @@ func (p *processor) LoginUser(ctx context.Context, auth entity.UserAuth) error {
 	return err
 }
 
+// RegisterUser - save user credentials as service user in repository
 func (p *processor) RegisterUser(ctx context.Context, auth entity.UserAuth) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(auth.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -58,6 +62,7 @@ func (p *processor) RegisterUser(ctx context.Context, auth entity.UserAuth) erro
 	return err
 }
 
+// CardEdit - edit card data, pass request to db
 func (p *processor) CardEdit(ctx context.Context, index string, card entity.UserCard) error {
 	intIndex, err := strconv.Atoi(index)
 	if err != nil {
@@ -68,6 +73,7 @@ func (p *processor) CardEdit(ctx context.Context, index string, card entity.User
 	return err
 }
 
+// BinaryEdit - edit binary data, pass request to db
 func (p *processor) BinaryEdit(ctx context.Context, index string, binary entity.UserBinary) error {
 	decodedContent, err := base64.StdEncoding.DecodeString(binary.B64Content)
 	if err != nil {
@@ -83,6 +89,7 @@ func (p *processor) BinaryEdit(ctx context.Context, index string, binary entity.
 	return err
 }
 
+// TextEdit - edit text data, pass request to db
 func (p *processor) TextEdit(ctx context.Context, index string, text entity.UserText) error {
 	intIndex, err := strconv.Atoi(index)
 	if err != nil {
@@ -93,6 +100,7 @@ func (p *processor) TextEdit(ctx context.Context, index string, text entity.User
 	return err
 }
 
+// CredentialsEdit - edit credentials data, pass request to db
 func (p *processor) CredentialsEdit(ctx context.Context, index string, credentials entity.UserCredentials) error {
 	intIndex, err := strconv.Atoi(index)
 	if err != nil {
@@ -103,11 +111,13 @@ func (p *processor) CredentialsEdit(ctx context.Context, index string, credentia
 	return err
 }
 
+// DeleteUserData - delete all user data, pass request to db
 func (p *processor) DeleteUserData(ctx context.Context, data, id string) error {
 	err := p.repo.DeleteUserData(ctx, data, id)
 	return err
 }
 
+// GetUserData - find all user data by index and user, pass request to db
 func (p *processor) GetUserData(ctx context.Context, data, id, user string) (interface{}, error) {
 	res, err := p.repo.GetUserData(ctx, data, id, user)
 	if data == "binary" {
@@ -118,11 +128,13 @@ func (p *processor) GetUserData(ctx context.Context, data, id, user string) (int
 	return res, err
 }
 
+// ListUserData - find all user data by user, pass request to db
 func (p *processor) ListUserData(ctx context.Context, data, user string) (interface{}, error) {
 	res, err := p.repo.SelectUserData(ctx, data, user)
 	return res, err
 }
 
+// BinaryCreation - save user binary data, pass request to db
 func (p *processor) BinaryCreation(ctx context.Context, binary entity.UserBinary, user string) error {
 	decodedContent, err := base64.StdEncoding.DecodeString(binary.B64Content)
 	if err != nil {
@@ -133,21 +145,25 @@ func (p *processor) BinaryCreation(ctx context.Context, binary entity.UserBinary
 	return err
 }
 
+// TextCreation - save user text data, pass request to db
 func (p *processor) TextCreation(ctx context.Context, text entity.UserText, user string) error {
 	err := p.repo.InsertText(ctx, text, user)
 	return err
 }
 
+// CredentialsCreation - save user credentials, pass request to db
 func (p *processor) CredentialsCreation(ctx context.Context, credentials entity.UserCredentials, user string) error {
 	err := p.repo.InsertCredentials(ctx, credentials, user)
 	return err
 }
 
+// CardCreation - save user cards data, pass request to db
 func (p *processor) CardCreation(ctx context.Context, card entity.UserCard, user string) error {
 	err := p.repo.InsertCard(ctx, card, user)
 	return err
 }
 
+// New - create server side use case
 func New(repo repository) *processor {
 	return &processor{
 		repo: repo,

@@ -12,6 +12,7 @@ type sender interface {
 	CreateCredentials(serviceName, serviceLogin, servicePassword, meta, user string) error
 }
 
+// New - return command for credentials creation
 func New(s sender) *cobra.Command {
 	var serviceName, serviceLogin, servicePassword, meta string
 	createCmd := &cobra.Command{

@@ -36,6 +36,7 @@ type handler struct {
 	processor secretsProcessor
 }
 
+// Login - handler for user login
 func (h *handler) Login(ctx *gin.Context) {
 	var auth entity.UserAuth
 	if err := json.NewDecoder(ctx.Request.Body).Decode(&auth); err != nil {
@@ -53,6 +54,7 @@ func (h *handler) Login(ctx *gin.Context) {
 	}
 }
 
+// Register - handler for user register
 func (h *handler) Register(ctx *gin.Context) {
 	var auth entity.UserAuth
 	if err := json.NewDecoder(ctx.Request.Body).Decode(&auth); err != nil {
@@ -70,6 +72,7 @@ func (h *handler) Register(ctx *gin.Context) {
 	}
 }
 
+// List - handler for user login
 func (h *handler) List(ctx *gin.Context) {
 	data := ctx.Param("data")
 	user := ctx.Param("user")
@@ -95,6 +98,7 @@ func (h *handler) List(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// Get - handler for getting user secrets
 func (h *handler) Get(ctx *gin.Context) {
 	data := ctx.Param("data")
 	id := ctx.Param("id")
@@ -118,6 +122,7 @@ func (h *handler) Get(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// CredentialsCreate - handler for saving user credentials for services
 func (h *handler) CredentialsCreate(ctx *gin.Context) {
 	user := ctx.Param("user")
 
@@ -133,6 +138,7 @@ func (h *handler) CredentialsCreate(ctx *gin.Context) {
 	}
 }
 
+// Delete - handler for saving user secrets from service
 func (h *handler) Delete(ctx *gin.Context) {
 	data := ctx.Param("data")
 	id := ctx.Param("id")
@@ -143,6 +149,7 @@ func (h *handler) Delete(ctx *gin.Context) {
 	}
 }
 
+// TextCreate - handler for saving user text secrets
 func (h *handler) TextCreate(ctx *gin.Context) {
 	user := ctx.Param("user")
 
@@ -158,6 +165,7 @@ func (h *handler) TextCreate(ctx *gin.Context) {
 	}
 }
 
+// BinaryCreate - handler for saving user binary secrets
 func (h *handler) BinaryCreate(ctx *gin.Context) {
 	user := ctx.Param("user")
 
@@ -173,6 +181,7 @@ func (h *handler) BinaryCreate(ctx *gin.Context) {
 	}
 }
 
+// CardCreate - handler for saving user card secrets
 func (h *handler) CardCreate(ctx *gin.Context) {
 	user := ctx.Param("user")
 
@@ -188,6 +197,7 @@ func (h *handler) CardCreate(ctx *gin.Context) {
 	}
 }
 
+// CredentialsEdit - handler for edit user credentials
 func (h *handler) CredentialsEdit(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var credentials entity.UserCredentials
@@ -202,6 +212,7 @@ func (h *handler) CredentialsEdit(ctx *gin.Context) {
 	}
 }
 
+// TextEdit - handler for edit user text secrets
 func (h *handler) TextEdit(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var text entity.UserText
@@ -217,6 +228,7 @@ func (h *handler) TextEdit(ctx *gin.Context) {
 
 }
 
+// BinaryEdit - handler for edit user binary secrets
 func (h *handler) BinaryEdit(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var binary entity.UserBinary
@@ -232,6 +244,7 @@ func (h *handler) BinaryEdit(ctx *gin.Context) {
 
 }
 
+// CardEdit - handler for edit user card secrets
 func (h *handler) CardEdit(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var card entity.UserCard
@@ -247,6 +260,7 @@ func (h *handler) CardEdit(ctx *gin.Context) {
 
 }
 
+// New - create handlers instance
 func New(processor secretsProcessor) *handler {
 	return &handler{
 		processor: processor,

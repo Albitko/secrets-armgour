@@ -13,6 +13,7 @@ type serverConfig struct {
 	ServerAddr  string `env:"SRV_ADDR" envDefault:"0.0.0.0:8080"`
 }
 
+// NewServerFromEnv - return config for server
 func NewServerFromEnv(l logger) (cfg serverConfig, err error) {
 	if err = env.Parse(&cfg); err != nil {
 		l.Errorf("error: %s reading config from env", err.Error())

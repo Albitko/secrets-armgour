@@ -12,6 +12,7 @@ type sender interface {
 	EditText(index int, title, body, meta string) error
 }
 
+// New - return command for all secret data deletion
 func New(s sender) *cobra.Command {
 	var title, body, meta string
 	var index int

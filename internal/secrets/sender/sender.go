@@ -31,21 +31,25 @@ type sender struct {
 	api httpAPI
 }
 
+// LoginUser - use http client for user login
 func (s *sender) LoginUser(login, password string) error {
 	err := s.api.LoginUser(login, password)
 	return err
 }
 
+// RegisterUser - use http client for user register
 func (s *sender) RegisterUser(login, password string) error {
 	err := s.api.RegisterUser(login, password)
 	return err
 }
 
+// EditCredentials - use http client for change user credentials
 func (s *sender) EditCredentials(index int, serviceName, serviceLogin, servicePassword, meta string) error {
 	err := s.api.EditCredentials(index, serviceName, serviceLogin, servicePassword, meta)
 	return err
 }
 
+// EditBinary - use http client for change user binary data
 func (s *sender) EditBinary(index int, title, dataPath, meta string) error {
 	var key, encTitle, encContent, encMeta string
 	content, err := os.ReadFile(dataPath)
@@ -80,20 +84,24 @@ func (s *sender) EditBinary(index int, title, dataPath, meta string) error {
 	return err
 }
 
+// EditCard - use http client for change user card data
 func (s *sender) EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error {
 	err := s.api.EditCard(index, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta)
 	return err
 }
 
+// EditText - use http client for change user text data
 func (s *sender) EditText(index int, title, body, meta string) error {
 	err := s.api.EditText(index, title, body, meta)
 	return err
 }
 
+// DeleteUserSecrets - use http client for delete user data
 func (s *sender) DeleteUserSecrets(secretType string, idx int) error {
 	return s.api.DeleteUserSecrets(secretType, idx)
 }
 
+// GetUserSecrets - use http client for get user data
 func (s *sender) GetUserSecrets(secretType, user string, idx int) (interface{}, error) {
 	resp, err := s.api.GetSecret(secretType, user, idx)
 	var res interface{}
@@ -130,6 +138,7 @@ func (s *sender) GetUserSecrets(secretType, user string, idx int) (interface{}, 
 	return res, err
 }
 
+// ListUserSecrets - use http client for list all user data
 func (s *sender) ListUserSecrets(data, user string) (interface{}, error) {
 	resp, err := s.api.ListSecrets(data, user)
 	var res interface{}
@@ -166,6 +175,7 @@ func (s *sender) ListUserSecrets(data, user string) (interface{}, error) {
 	return res, err
 }
 
+// CreateBinary - use http client for create user binary data
 func (s *sender) CreateBinary(title, dataPath, meta string) error {
 	content, err := os.ReadFile(dataPath)
 	if err != nil {
@@ -197,21 +207,25 @@ func (s *sender) CreateBinary(title, dataPath, meta string) error {
 	return err
 }
 
+// CreateCard - use http client for create user card data
 func (s *sender) CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error {
 	err := s.api.CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user)
 	return err
 }
 
+// CreateText - use http client for create user text data
 func (s *sender) CreateText(title, body, meta, user string) error {
 	err := s.api.CreateText(title, body, meta, user)
 	return err
 }
 
+// CreateCredentials - use http client for create user credentials data
 func (s *sender) CreateCredentials(serviceName, serviceLogin, servicePassword, meta, user string) error {
 	err := s.api.SendCredentials(serviceName, serviceLogin, servicePassword, meta, user)
 	return err
 }
 
+// New - cli use case
 func New(api httpAPI) *sender {
 	return &sender{
 		api: api,

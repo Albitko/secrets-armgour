@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// New - return command for logout
 func New() *cobra.Command {
 	logoutCmd := &cobra.Command{
 		Use:   "logout",

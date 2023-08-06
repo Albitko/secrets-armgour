@@ -17,6 +17,7 @@ type sender interface {
 	RegisterUser(login, password string) error
 }
 
+// New - return command for register user
 func New(s sender) *cobra.Command {
 	var login, password string
 

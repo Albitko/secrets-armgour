@@ -15,6 +15,7 @@ type sender interface {
 	GetUserSecrets(secretType, user string, idx int) (interface{}, error)
 }
 
+// New - return command for secrets getting
 func New(s sender) *cobra.Command {
 	var data string
 	var index int

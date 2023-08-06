@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Init - main server side login
 func Init() *zap.SugaredLogger {
 	file, err := os.Create("armgour-server.log")
 	if err != nil {

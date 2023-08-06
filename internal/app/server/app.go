@@ -12,6 +12,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/utils/logger"
 )
 
+// Run - server side application
 func Run() {
 	log := logger.Init()
 	appCfg, err := config.NewServerFromEnv(log)

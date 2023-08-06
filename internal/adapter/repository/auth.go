@@ -10,6 +10,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
+// GetUserPasswordHash - return password hash for login
 func (d *postgres) GetUserPasswordHash(ctx context.Context, login string) (string, error) {
 	var passHash string
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
@@ -35,6 +36,7 @@ func (d *postgres) GetUserPasswordHash(ctx context.Context, login string) (strin
 	return passHash, nil
 }
 
+// RegisterUser - save login and password pair for service
 func (d *postgres) RegisterUser(ctx context.Context, login, pass string) error {
 	var pgErr *pgconn.PgError
 	now := time.Now()

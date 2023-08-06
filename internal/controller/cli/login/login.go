@@ -17,6 +17,7 @@ type sender interface {
 	LoginUser(login, password string) error
 }
 
+// New - return command for login
 func New(s sender) *cobra.Command {
 	var login, password string
 	loginCmd := &cobra.Command{

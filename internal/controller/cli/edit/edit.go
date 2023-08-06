@@ -16,6 +16,7 @@ type sender interface {
 	EditText(index int, title, body, meta string) error
 }
 
+// New - return command for data edit
 func New(s sender) *cobra.Command {
 	editCmd := &cobra.Command{
 		Use:   "edit",

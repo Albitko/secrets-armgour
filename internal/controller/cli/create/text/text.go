@@ -12,6 +12,7 @@ type sender interface {
 	CreateText(title, body, meta, user string) error
 }
 
+// New - return command for text creation
 func New(s sender) *cobra.Command {
 	var title, body, meta string
 	createCmd := &cobra.Command{

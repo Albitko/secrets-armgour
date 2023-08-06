@@ -10,6 +10,7 @@ type sender interface {
 	EditBinary(index int, title, dataPath, meta string) error
 }
 
+// New - return command for binary edit
 func New(s sender) *cobra.Command {
 	var title, dataPath, meta string
 	var index int

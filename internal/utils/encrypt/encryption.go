@@ -13,6 +13,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
+// EncryptMessage - encrypt message before sending data to server
 func EncryptMessage(key []byte, message string) (string, error) {
 	byteMsg := []byte(message)
 	block, err := aes.NewCipher(key)
@@ -32,6 +33,7 @@ func EncryptMessage(key []byte, message string) (string, error) {
 	return base64.StdEncoding.EncodeToString(cipherText), nil
 }
 
+// DecryptMessage - decrypt  received from server data
 func DecryptMessage(key []byte, message string) (string, error) {
 	cipherText, err := base64.StdEncoding.DecodeString(message)
 	if err != nil {
@@ -56,6 +58,7 @@ func DecryptMessage(key []byte, message string) (string, error) {
 	return string(cipherText), nil
 }
 
+// GetCliSecrets return .token data for user auth and crypto
 func GetCliSecrets() (string, string, error) {
 	var cliSecrets entity.CliSecrets
 	content, err := os.ReadFile(".token")

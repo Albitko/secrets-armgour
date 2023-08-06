@@ -7,6 +7,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
+// InsertCard - save card data for user
 func (d *postgres) InsertCard(ctx context.Context, card entity.UserCard, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
@@ -39,6 +40,7 @@ func (d *postgres) InsertCard(ctx context.Context, card entity.UserCard, user st
 	return nil
 }
 
+// InsertCredentials - save credentials data for user
 func (d *postgres) InsertCredentials(ctx context.Context, credentials entity.UserCredentials, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
@@ -70,6 +72,7 @@ func (d *postgres) InsertCredentials(ctx context.Context, credentials entity.Use
 	return nil
 }
 
+// InsertBinary - save credentials data for user
 func (d *postgres) InsertBinary(ctx context.Context, bin entity.UserBinary, data []byte, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")
@@ -100,6 +103,7 @@ func (d *postgres) InsertBinary(ctx context.Context, bin entity.UserBinary, data
 	return nil
 }
 
+// InsertText - save text data for user
 func (d *postgres) InsertText(ctx context.Context, text entity.UserText, user string) error {
 	now := time.Now()
 	createdAt := now.Format("2006-01-02T15:04")

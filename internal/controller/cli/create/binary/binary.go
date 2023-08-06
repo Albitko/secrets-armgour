@@ -10,6 +10,7 @@ type sender interface {
 	CreateBinary(title, dataPath, meta string) error
 }
 
+// New - return command for binary creation
 func New(s sender) *cobra.Command {
 	var title, dataPath, meta string
 	createCmd := &cobra.Command{

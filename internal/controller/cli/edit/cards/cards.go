@@ -12,6 +12,7 @@ type sender interface {
 	EditCard(index int, cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string) error
 }
 
+// New - return command for cards edit
 func New(s sender) *cobra.Command {
 	var cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string
 	var index int

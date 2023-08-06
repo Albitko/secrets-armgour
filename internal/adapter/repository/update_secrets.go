@@ -8,6 +8,7 @@ import (
 	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
+// UpdateCard - edit card data for user
 func (d *postgres) UpdateCard(ctx context.Context, index int, card entity.UserCard) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -48,6 +49,7 @@ func (d *postgres) UpdateCard(ctx context.Context, index int, card entity.UserCa
 	return nil
 }
 
+// UpdateCredentials - edit credentials data for user
 func (d *postgres) UpdateCredentials(ctx context.Context, index int, credentials entity.UserCredentials) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -87,6 +89,7 @@ func (d *postgres) UpdateCredentials(ctx context.Context, index int, credentials
 	return nil
 }
 
+// UpdateBinary - edit binary data for user
 func (d *postgres) UpdateBinary(ctx context.Context, index int, bin entity.UserBinary, data []byte) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
@@ -125,6 +128,7 @@ func (d *postgres) UpdateBinary(ctx context.Context, index int, bin entity.UserB
 	return nil
 }
 
+// UpdateText - edit text data for user
 func (d *postgres) UpdateText(ctx context.Context, index int, text entity.UserText) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()

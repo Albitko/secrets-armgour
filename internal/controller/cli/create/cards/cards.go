@@ -12,6 +12,7 @@ type sender interface {
 	CreateCard(cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta, user string) error
 }
 
+// New - return command for cards creation
 func New(s sender) *cobra.Command {
 	var cardHolder, cardNumber, cardValidityPeriod, cvcCode, meta string
 	createCmd := &cobra.Command{

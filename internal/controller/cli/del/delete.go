@@ -10,6 +10,7 @@ type sender interface {
 	DeleteUserSecrets(secretType string, idx int) error
 }
 
+// New - return command for all secret data deletion
 func New(s sender) *cobra.Command {
 	var data string
 	var index int

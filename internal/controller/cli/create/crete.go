@@ -16,6 +16,7 @@ type sender interface {
 	CreateBinary(title, dataPath, meta string) error
 }
 
+// New - return command for creation
 func New(s sender) *cobra.Command {
 	createCmd := &cobra.Command{
 		Use:   "create",

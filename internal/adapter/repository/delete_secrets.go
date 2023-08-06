@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// DeleteUserData - remove users secrets
 func (d *postgres) DeleteUserData(ctx context.Context, data, id string) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	var query string

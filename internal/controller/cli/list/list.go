@@ -13,6 +13,7 @@ type sender interface {
 	ListUserSecrets(data, user string) (interface{}, error)
 }
 
+// New - return command for list secrets
 func New(s sender) *cobra.Command {
 	var data string
 	listCmd := &cobra.Command{
