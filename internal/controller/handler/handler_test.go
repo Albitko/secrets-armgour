@@ -508,5 +508,43 @@ func TestCredentialsEdit(t *testing.T) {
 			assert.Equal(t, tt.expectedCode, ctx.Writer.Status())
 		})
 	}
+}
 
+func TestCardCreate(t *testing.T) {
+	binaryEditTests := []struct {
+		name         string
+		body         string
+		url          string
+		returnErr    error
+		expectedCode int
+	}{
+		{
+			name:         "Edit binary: Succes",
+			body:         `{"test": "test"}`,
+			url:          "/v1/secrets/card/user",
+			returnErr:    nil,
+			expectedCode: 200,
+		},
+		{
+			name:         "Edit binary: Fail",
+			body:         `not a json`,
+			url:          "/v1/secrets/card/user",
+			returnErr:    fmt.Errorf("some err"),
+			expectedCode: 500,
+		},
+	}
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := handler{processor: mockProcessor}
+	for _, tt := range binaryEditTests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockProcessor.On("CardCreation", mock.Anything, mock.Anything, mock.Anything).Return(nil)
+			req, _ := http.NewRequest("POST", tt.url, strings.NewReader(tt.body))
+			recorder := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(recorder)
+			ctx.Request = req
+			handler.CardCreate(ctx)
+			mockProcessor.AssertExpectations(t)
+			assert.Equal(t, tt.expectedCode, ctx.Writer.Status())
+		})
+	}
 }
