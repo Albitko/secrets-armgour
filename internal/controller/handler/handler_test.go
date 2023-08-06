@@ -590,3 +590,9 @@ func TestCardCreate(t *testing.T) {
 	h.CardCreate(c)
 	assert.Equal(t, http.StatusInternalServerError, r.Code)
 }
+
+func TestCreateHandlers(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := New(mockProcessor)
+	assert.IsType(t, (*handler)(nil), h)
+}
