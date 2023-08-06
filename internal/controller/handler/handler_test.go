@@ -34,6 +34,13 @@ func Test_LoginSuccess(t *testing.T) {
 	h.Login(ctx)
 	assert.Equal(t, http.StatusOK, w.Code)
 	mockProcessor.AssertCalled(t, "LoginUser", mock.Anything, auth)
+
+	r := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(r)
+	bodyError := []byte("not a json")
+	c.Request, _ = http.NewRequest(http.MethodPost, "/v1/user/login", bytes.NewReader(bodyError))
+	h.Login(c)
+	assert.Equal(t, http.StatusInternalServerError, r.Code)
 }
 
 func TestLogin_InvalidCredentials(t *testing.T) {
@@ -95,6 +102,13 @@ func TestRegister_LoginAlreadyInUse(t *testing.T) {
 	h.Register(ctx)
 	assert.Equal(t, http.StatusConflict, w.Code)
 	mockProcessor.AssertCalled(t, "RegisterUser", mock.Anything, auth)
+
+	r := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(r)
+	bodyError := []byte("not a json")
+	c.Request, _ = http.NewRequest(http.MethodPost, "/v1/user/register", bytes.NewReader(bodyError))
+	h.Register(c)
+	assert.Equal(t, http.StatusInternalServerError, r.Code)
 }
 
 func TestRegister_InternalServerError(t *testing.T) {
@@ -284,7 +298,7 @@ func TestGet_Success(t *testing.T) {
 
 func TestCredentialsCreate(t *testing.T) {
 	mockProcessor := newMockSecretsProcessor(t)
-	handler := &handler{
+	h := &handler{
 		processor: mockProcessor,
 	}
 	mockProcessor.On("CredentialsCreation", mock.Anything, mock.Anything, mock.Anything).
@@ -294,9 +308,16 @@ func TestCredentialsCreate(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Request = req
-	handler.CredentialsCreate(ctx)
+	h.CredentialsCreate(ctx)
 	mockProcessor.AssertExpectations(t)
 	assert.Equal(t, http.StatusOK, w.Code)
+
+	r := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(r)
+	bodyError := []byte("not a json")
+	c.Request, _ = http.NewRequest(http.MethodPost, "/credentials/create/testuser", bytes.NewReader(bodyError))
+	h.CredentialsCreate(c)
+	assert.Equal(t, http.StatusInternalServerError, r.Code)
 }
 
 func TestDelete(t *testing.T) {
@@ -317,7 +338,7 @@ func TestDelete(t *testing.T) {
 
 func TestTextCreate(t *testing.T) {
 	mockProcessor := newMockSecretsProcessor(t)
-	handler := &handler{
+	h := &handler{
 		processor: mockProcessor,
 	}
 	mockProcessor.On("TextCreation", mock.AnythingOfType("*gin.Context"), mock.Anything, mock.Anything).
@@ -327,14 +348,21 @@ func TestTextCreate(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Request = req
-	handler.TextCreate(ctx)
+	h.TextCreate(ctx)
 	mockProcessor.AssertExpectations(t)
 	assert.Equal(t, http.StatusOK, w.Code)
+
+	r := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(r)
+	bodyError := []byte("not a json")
+	c.Request, _ = http.NewRequest(http.MethodPost, "/v1/secrets/text/user", bytes.NewReader(bodyError))
+	h.TextCreate(c)
+	assert.Equal(t, http.StatusInternalServerError, r.Code)
 }
 
 func TestBinaryCreate(t *testing.T) {
 	mockProcessor := newMockSecretsProcessor(t)
-	handler := &handler{
+	h := &handler{
 		processor: mockProcessor,
 	}
 	mockProcessor.On("BinaryCreation", mock.AnythingOfType("*gin.Context"), mock.Anything, mock.Anything).
@@ -344,9 +372,16 @@ func TestBinaryCreate(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Request = req
-	handler.BinaryCreate(ctx)
+	h.BinaryCreate(ctx)
 	mockProcessor.AssertExpectations(t)
 	assert.Equal(t, http.StatusOK, w.Code)
+
+	r := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(r)
+	bodyError := []byte("not a json")
+	c.Request, _ = http.NewRequest(http.MethodPost, "/v1/secrets/binary/user", bytes.NewReader(bodyError))
+	h.BinaryCreate(c)
+	assert.Equal(t, http.StatusInternalServerError, r.Code)
 }
 
 func TestTextEdit(t *testing.T) {
@@ -534,7 +569,7 @@ func TestCardCreate(t *testing.T) {
 		},
 	}
 	mockProcessor := newMockSecretsProcessor(t)
-	handler := handler{processor: mockProcessor}
+	h := handler{processor: mockProcessor}
 	for _, tt := range binaryEditTests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockProcessor.On("CardCreation", mock.Anything, mock.Anything, mock.Anything).Return(nil)
@@ -542,9 +577,16 @@ func TestCardCreate(t *testing.T) {
 			recorder := httptest.NewRecorder()
 			ctx, _ := gin.CreateTestContext(recorder)
 			ctx.Request = req
-			handler.CardCreate(ctx)
+			h.CardCreate(ctx)
 			mockProcessor.AssertExpectations(t)
 			assert.Equal(t, tt.expectedCode, ctx.Writer.Status())
 		})
 	}
+
+	r := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(r)
+	bodyError := []byte("not a json")
+	c.Request, _ = http.NewRequest(http.MethodPost, "/v1/secrets/card/user", bytes.NewReader(bodyError))
+	h.CardCreate(c)
+	assert.Equal(t, http.StatusInternalServerError, r.Code)
 }
