@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -278,4 +279,21 @@ func TestGet_Success(t *testing.T) {
 		})
 	}
 
+}
+
+func TestCredentialsCreate(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := &handler{
+		processor: mockProcessor,
+	}
+	mockProcessor.On("CredentialsCreation", mock.Anything, mock.Anything, mock.Anything).
+		Return(nil).Once()
+	body := `{"username":"testuser","password":"testpassword"}`
+	req, _ := http.NewRequest("POST", "/credentials/create/testuser", strings.NewReader(body))
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Request = req
+	handler.CredentialsCreate(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
