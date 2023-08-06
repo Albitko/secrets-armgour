@@ -367,7 +367,7 @@ func TestDelete_InternalServerError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
-func Test_InternalServerError(t *testing.T) {
+func TestTextCreation_InternalServerError(t *testing.T) {
 	mockProcessor := newMockSecretsProcessor(t)
 	h := &handler{
 		processor: mockProcessor,
@@ -380,6 +380,70 @@ func Test_InternalServerError(t *testing.T) {
 	mockProcessor.On("TextCreation", mock.Anything, mock.Anything, mock.Anything).
 		Return(errors.New("some error"))
 	h.TextCreate(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestBinaryCreate_InternalServerError(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	body := []byte(`{"text":"This is a test text"}`)
+	ctx.Request, _ = http.NewRequest(http.MethodPost, "/v1/secrets/binary/user", bytes.NewReader(body))
+	mockProcessor.On("BinaryCreation", mock.Anything, mock.Anything, mock.Anything).
+		Return(errors.New("some error"))
+	h.BinaryCreate(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestTextEdit_InternalServerError(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	body := []byte(`{"text":"This is a test text"}`)
+	ctx.Request, _ = http.NewRequest(http.MethodPut, "/v1/secrets/text/1", bytes.NewReader(body))
+	mockProcessor.On("TextEdit", mock.Anything, mock.Anything, mock.Anything).
+		Return(errors.New("some error"))
+	h.TextEdit(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestBinaryEdit_InternalServerError(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	body := []byte(`{"text":"This is a test text"}`)
+	ctx.Request, _ = http.NewRequest(http.MethodPut, "/v1/secrets/binary/1", bytes.NewReader(body))
+	mockProcessor.On("BinaryEdit", mock.Anything, mock.Anything, mock.Anything).
+		Return(errors.New("some error"))
+	h.BinaryEdit(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestCardCreation_InternalServerError(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	body := []byte(`{"text":"This is a test text"}`)
+	ctx.Request, _ = http.NewRequest(http.MethodPost, "/v1/secrets/cards/user", bytes.NewReader(body))
+	mockProcessor.On("CardCreation", mock.Anything, mock.Anything, mock.Anything).
+		Return(errors.New("some error"))
+	h.CardCreate(ctx)
 	mockProcessor.AssertExpectations(t)
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
