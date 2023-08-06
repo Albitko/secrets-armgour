@@ -313,3 +313,20 @@ func TestDelete(t *testing.T) {
 	mockProcessor.AssertExpectations(t)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+func TestTextCreate(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := &handler{
+		processor: mockProcessor,
+	}
+	mockProcessor.On("TextCreation", mock.AnythingOfType("*gin.Context"), mock.Anything, mock.Anything).
+		Return(nil).Once()
+	reqBody := []byte(`{"text":"This is a test text"}`)
+	req, _ := http.NewRequest("POST", "/text", bytes.NewBuffer(reqBody))
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Request = req
+	handler.TextCreate(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
