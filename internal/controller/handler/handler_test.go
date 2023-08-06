@@ -297,3 +297,19 @@ func TestCredentialsCreate(t *testing.T) {
 	mockProcessor.AssertExpectations(t)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+func TestDelete(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := &handler{
+		processor: mockProcessor,
+	}
+	mockProcessor.On("DeleteUserData", mock.Anything, mock.Anything, mock.Anything).
+		Return(nil).Once()
+	req, _ := http.NewRequest("DELETE", "/delete/data/123", nil)
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Request = req
+	handler.Delete(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
