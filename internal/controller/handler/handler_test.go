@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -190,7 +189,6 @@ func TestList_Success(t *testing.T) {
 
 			h.List(ctx)
 			assert.Equal(t, http.StatusOK, w.Code)
-			fmt.Println("@@@@", w.Body.String())
 			assert.JSONEq(t, tt.expectedJson, w.Body.String())
 
 			mockProcessor.AssertCalled(t, "ListUserData", mock.Anything, tt.data, tt.user)
@@ -213,4 +211,71 @@ func TestList_InternalServerError(t *testing.T) {
 	mockProcessor.On("ListUserData", mock.Anything, "credentials", "user1").Return(nil, errors.New("some error"))
 	h.List(ctx)
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestGet_Success(t *testing.T) {
+	getTests := []struct {
+		name         string
+		data         string
+		user         string
+		id           string
+		returnVal    interface{}
+		expectedJson string
+	}{
+		{
+			name:         "Get credentials: Succes",
+			data:         "credentials",
+			user:         "user1",
+			id:           "1",
+			returnVal:    entity.UserCredentials{},
+			expectedJson: `{"Meta":"", "ServiceLogin":"", "ServiceName":"", "ServicePassword":""}`,
+		},
+		{
+			name:         "Get binary: Succes",
+			data:         "binary",
+			user:         "user1",
+			id:           "1",
+			returnVal:    entity.UserBinary{},
+			expectedJson: `{"B64Content":"", "Meta":"", "Title":""}`,
+		},
+		{
+			name:         "Get text: Succes",
+			data:         "text",
+			user:         "user1",
+			id:           "1",
+			returnVal:    entity.UserText{},
+			expectedJson: `{"Body":"", "Meta":"", "Title":""}`,
+		},
+		{
+			name:         "Get card: Succes",
+			data:         "card",
+			user:         "user1",
+			id:           "1",
+			returnVal:    entity.UserCard{},
+			expectedJson: `{"CardHolder":"", "CardNumber":"", "CardValidityPeriod":"", "CvcCode":"", "Meta":""}`,
+		},
+	}
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+
+	for _, tt := range getTests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			ctx, _ := gin.CreateTestContext(w)
+			ctx.Params = []gin.Param{
+				{Key: "data", Value: tt.data},
+				{Key: "id", Value: tt.id},
+				{Key: "user", Value: tt.user},
+			}
+			mockProcessor.On("GetUserData", mock.Anything, tt.data, tt.id, tt.user).
+				Return(tt.returnVal, nil)
+			h.Get(ctx)
+			assert.Equal(t, http.StatusOK, w.Code)
+			assert.JSONEq(t, tt.expectedJson, w.Body.String())
+			mockProcessor.AssertCalled(t, "GetUserData", mock.Anything, tt.data, tt.id, tt.user)
+		})
+	}
+
 }
