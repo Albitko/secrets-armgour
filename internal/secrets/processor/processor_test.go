@@ -288,3 +288,18 @@ func TestDeleteUserData(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 	assert.NoError(t, err)
 }
+
+func TestRegisterUser(t *testing.T) {
+	repoMock := newMockRepository(t)
+	p := processor{
+		repo: repoMock,
+	}
+	expectedLogin := "testUser"
+	expectedPassword := "testPassword" // Plain text password
+	repoMock.On(
+		"RegisterUser", mock.Anything, expectedLogin, mock.AnythingOfType("string")).
+		Return(nil).Once()
+	err := p.RegisterUser(context.Background(), entity.UserAuth{Login: expectedLogin, Password: expectedPassword})
+	assert.NoError(t, err)
+	repoMock.AssertCalled(t, "RegisterUser", mock.Anything, expectedLogin, mock.AnythingOfType("string"))
+}
