@@ -256,6 +256,7 @@ func TestGet_Success(t *testing.T) {
 		user         string
 		id           string
 		returnVal    interface{}
+		returnErr    error
 		expectedJson string
 	}{
 		{
@@ -264,6 +265,7 @@ func TestGet_Success(t *testing.T) {
 			user:         "user1",
 			id:           "1",
 			returnVal:    entity.UserCredentials{},
+			returnErr:    nil,
 			expectedJson: `{"Meta":"", "ServiceLogin":"", "ServiceName":"", "ServicePassword":""}`,
 		},
 		{
@@ -272,6 +274,7 @@ func TestGet_Success(t *testing.T) {
 			user:         "user1",
 			id:           "1",
 			returnVal:    entity.UserBinary{},
+			returnErr:    nil,
 			expectedJson: `{"B64Content":"", "Meta":"", "Title":""}`,
 		},
 		{
@@ -280,6 +283,7 @@ func TestGet_Success(t *testing.T) {
 			user:         "user1",
 			id:           "1",
 			returnVal:    entity.UserText{},
+			returnErr:    nil,
 			expectedJson: `{"Body":"", "Meta":"", "Title":""}`,
 		},
 		{
@@ -288,6 +292,16 @@ func TestGet_Success(t *testing.T) {
 			user:         "user1",
 			id:           "1",
 			returnVal:    entity.UserCard{},
+			returnErr:    nil,
+			expectedJson: `{"CardHolder":"", "CardNumber":"", "CardValidityPeriod":"", "CvcCode":"", "Meta":""}`,
+		},
+		{
+			name:         "Get card: Fail",
+			data:         "card",
+			user:         "user1",
+			id:           "1",
+			returnVal:    entity.UserCard{},
+			returnErr:    fmt.Errorf("some err"),
 			expectedJson: `{"CardHolder":"", "CardNumber":"", "CardValidityPeriod":"", "CvcCode":"", "Meta":""}`,
 		},
 	}
