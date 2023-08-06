@@ -327,7 +327,61 @@ func TestGet_Success(t *testing.T) {
 			mockProcessor.AssertCalled(t, "GetUserData", mock.Anything, tt.data, tt.id, tt.user)
 		})
 	}
+}
 
+func TestCredentialsCreate_InternalServerError(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	auth := entity.UserAuth{
+		Login:    "user",
+		Password: "password",
+	}
+
+	body, _ := json.Marshal(auth)
+	ctx.Request, _ = http.NewRequest(http.MethodPost, "/v1/secrets/get/credentials/1/user", bytes.NewReader(body))
+	mockProcessor.On("CredentialsCreation", mock.Anything, mock.Anything, mock.Anything).
+		Return(errors.New("some error"))
+
+	h.CredentialsCreate(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func TestDelete_InternalServerError(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+
+	ctx.Request, _ = http.NewRequest(http.MethodDelete, "/delete/data/123", nil)
+	mockProcessor.On("DeleteUserData", mock.Anything, mock.Anything, mock.Anything).
+		Return(errors.New("some error"))
+	h.Delete(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
+
+func Test_InternalServerError(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	h := &handler{
+		processor: mockProcessor,
+	}
+
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	body := []byte(`{"text":"This is a test text"}`)
+	ctx.Request, _ = http.NewRequest(http.MethodPost, "/v1/secrets/text/user", bytes.NewReader(body))
+	mockProcessor.On("TextCreation", mock.Anything, mock.Anything, mock.Anything).
+		Return(errors.New("some error"))
+	h.TextCreate(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
 }
 
 func TestCredentialsCreate(t *testing.T) {
