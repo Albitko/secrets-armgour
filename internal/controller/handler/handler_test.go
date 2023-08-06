@@ -322,11 +322,28 @@ func TestTextCreate(t *testing.T) {
 	mockProcessor.On("TextCreation", mock.AnythingOfType("*gin.Context"), mock.Anything, mock.Anything).
 		Return(nil).Once()
 	reqBody := []byte(`{"text":"This is a test text"}`)
-	req, _ := http.NewRequest("POST", "/text", bytes.NewBuffer(reqBody))
+	req, _ := http.NewRequest("POST", "/v1/secrets/text/user", bytes.NewBuffer(reqBody))
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	ctx.Request = req
 	handler.TextCreate(ctx)
+	mockProcessor.AssertExpectations(t)
+	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestBinaryCreate(t *testing.T) {
+	mockProcessor := newMockSecretsProcessor(t)
+	handler := &handler{
+		processor: mockProcessor,
+	}
+	mockProcessor.On("BinaryCreation", mock.AnythingOfType("*gin.Context"), mock.Anything, mock.Anything).
+		Return(nil).Once()
+	reqBody := []byte(`{"binary":"This is a test binary"}`)
+	req, _ := http.NewRequest("POST", "/v1/secrets/binary/user", bytes.NewBuffer(reqBody))
+	w := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(w)
+	ctx.Request = req
+	handler.BinaryCreate(ctx)
 	mockProcessor.AssertExpectations(t)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
