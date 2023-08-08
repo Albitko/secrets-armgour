@@ -106,28 +106,28 @@ func (s *sender) GetUserSecrets(secretType, user string, idx int) (interface{}, 
 	resp, err := s.api.GetSecret(secretType, user, idx)
 	var res interface{}
 	switch secretType {
-	case "credentials":
+	case entity.Credentials:
 		var cred entity.UserCredentials
 		err = json.Unmarshal([]byte(resp), &cred)
 		if err != nil {
 			return cred, err
 		}
 		res = cred
-	case "binary":
+	case entity.Binary:
 		var bin entity.UserBinary
 		err = json.Unmarshal([]byte(resp), &bin)
 		if err != nil {
 			return bin, err
 		}
 		res = bin
-	case "text":
+	case entity.Text:
 		var text entity.UserText
 		err = json.Unmarshal([]byte(resp), &text)
 		if err != nil {
 			return text, err
 		}
 		res = text
-	case "card":
+	case entity.Card:
 		var card entity.UserCard
 		err = json.Unmarshal([]byte(resp), &card)
 		if err != nil {
@@ -143,28 +143,28 @@ func (s *sender) ListUserSecrets(data, user string) (interface{}, error) {
 	resp, err := s.api.ListSecrets(data, user)
 	var res interface{}
 	switch data {
-	case "credentials":
+	case entity.Credentials:
 		var cred []entity.CutCredentials
 		err = json.Unmarshal([]byte(resp), &cred)
 		if err != nil {
 			return cred, err
 		}
 		res = cred
-	case "binary":
+	case entity.Binary:
 		var bin []entity.CutBinary
 		err = json.Unmarshal([]byte(resp), &bin)
 		if err != nil {
 			return bin, err
 		}
 		res = bin
-	case "text":
+	case entity.Text:
 		var text []entity.CutText
 		err = json.Unmarshal([]byte(resp), &text)
 		if err != nil {
 			return text, err
 		}
 		res = text
-	case "card":
+	case entity.Card:
 		var card []entity.CutCard
 		err = json.Unmarshal([]byte(resp), &card)
 		if err != nil {

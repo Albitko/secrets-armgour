@@ -31,7 +31,7 @@ func New(s sender) *cobra.Command {
 				fmt.Println(err)
 			}
 			switch data {
-			case "credentials":
+			case entity.Credentials:
 				credentials := res.([]entity.CutCredentials)
 				for _, c := range credentials {
 					decMeta, err := encrypt.DecryptMessage([]byte(key), c.Meta)
@@ -46,7 +46,7 @@ func New(s sender) *cobra.Command {
 					}
 					fmt.Println("ID:", c.Id, "Service name:", decService, "Description:", decMeta)
 				}
-			case "binary":
+			case entity.Binary:
 				bin := res.([]entity.CutBinary)
 				for _, b := range bin {
 					decMeta, err := encrypt.DecryptMessage([]byte(key), b.Meta)
@@ -61,7 +61,7 @@ func New(s sender) *cobra.Command {
 					}
 					fmt.Println("ID:", b.Id, "Binary name:", decTitle, "Description:", decMeta)
 				}
-			case "text":
+			case entity.Text:
 				texts := res.([]entity.CutText)
 				for _, t := range texts {
 					decMeta, err := encrypt.DecryptMessage([]byte(key), t.Meta)
@@ -76,7 +76,7 @@ func New(s sender) *cobra.Command {
 					}
 					fmt.Println("ID:", t.Id, "Note title:", decTitle, "Description:", decMeta)
 				}
-			case "card":
+			case entity.Card:
 				cards := res.([]entity.CutCard)
 				for _, c := range cards {
 					numberDec, err := encrypt.DecryptMessage([]byte(key), c.CardNumber)

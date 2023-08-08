@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -82,17 +81,13 @@ func (h *handler) List(ctx *gin.Context) {
 		return
 	}
 	switch data {
-	case "credentials":
-		fmt.Println(res)
+	case entity.Credentials:
 		res = res.([]entity.CutCredentials)
-	case "binary":
-		fmt.Println(res)
+	case entity.Binary:
 		res = res.([]entity.CutBinary)
-	case "text":
-		fmt.Println(res)
+	case entity.Text:
 		res = res.([]entity.CutText)
-	case "card":
-		fmt.Println(res)
+	case entity.Card:
 		res = res.([]entity.CutCard)
 	}
 	ctx.JSON(http.StatusOK, res)
@@ -110,13 +105,13 @@ func (h *handler) Get(ctx *gin.Context) {
 		return
 	}
 	switch data {
-	case "credentials":
+	case entity.Credentials:
 		res = res.(entity.UserCredentials)
-	case "binary":
+	case entity.Binary:
 		res = res.(entity.UserBinary)
-	case "text":
+	case entity.Text:
 		res = res.(entity.UserText)
-	case "card":
+	case entity.Card:
 		res = res.(entity.UserCard)
 	}
 	ctx.JSON(http.StatusOK, res)

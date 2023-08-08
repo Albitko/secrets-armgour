@@ -4,6 +4,8 @@ import (
 	"context"
 	"strconv"
 	"time"
+
+	"github.com/Albitko/secrets-armgour/internal/entity"
 )
 
 // DeleteUserData - remove users secrets
@@ -11,13 +13,13 @@ func (d *postgres) DeleteUserData(ctx context.Context, data, id string) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	var query string
 	switch data {
-	case "credentials":
+	case entity.Credentials:
 		query = `delete from credentials_data where id = $1`
-	case "binary":
+	case entity.Binary:
 		query = `delete from binary_data where id = $1`
-	case "text":
+	case entity.Text:
 		query = `delete from text_data where id = $1`
-	case "card":
+	case entity.Card:
 		query = `delete from cards_data where id = $1`
 	}
 	defer cancel()

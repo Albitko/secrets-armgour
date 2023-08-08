@@ -35,7 +35,7 @@ func New(s sender) *cobra.Command {
 				fmt.Println(err, secrets)
 			}
 			switch data {
-			case "credentials":
+			case entity.Credentials:
 				credentials := secrets.(entity.UserCredentials)
 				decMeta, err := encrypt.DecryptMessage([]byte(key), credentials.Meta)
 				if err != nil {
@@ -58,7 +58,7 @@ func New(s sender) *cobra.Command {
 				}
 				fmt.Println(
 					"Service name:", decService, "Login:", decLogin, "Password:", decPass, "Description:", decMeta)
-			case "binary":
+			case entity.Binary:
 				bin := secrets.(entity.UserBinary)
 				decMeta, err := encrypt.DecryptMessage([]byte(key), bin.Meta)
 				if err != nil {
@@ -86,7 +86,7 @@ func New(s sender) *cobra.Command {
 				}
 				fmt.Println(
 					"Binary with name " + decTitle + " and meta " + decMeta + " saved as " + decTitle + ".bin")
-			case "text":
+			case entity.Text:
 				text := secrets.(entity.UserText)
 
 				decMeta, err := encrypt.DecryptMessage([]byte(key), text.Meta)
@@ -104,7 +104,7 @@ func New(s sender) *cobra.Command {
 					fmt.Println(err)
 				}
 				fmt.Println("Note title", decTitle, "Note text", decBody, "Description:", decMeta)
-			case "card":
+			case entity.Card:
 				card := secrets.(entity.UserCard)
 
 				holderDec, err := encrypt.DecryptMessage([]byte(key), card.CardHolder)

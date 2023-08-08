@@ -16,7 +16,7 @@ func (d *postgres) GetUserData(ctx context.Context, data, id, user string) (inte
 	var res interface{}
 
 	switch data {
-	case "credentials":
+	case entity.Credentials:
 		var credential entity.UserCredentials
 		query := `
 		select service,service_login,service_password,meta  from credentials_data where id = $1 and user_id = $2;
@@ -45,7 +45,7 @@ func (d *postgres) GetUserData(ctx context.Context, data, id, user string) (inte
 			return "", err
 		}
 		res = credential
-	case "binary":
+	case entity.Binary:
 		var bin entity.UserBinary
 		query := `
 		select title,data_content,meta  from binary_data where id = $1 and user_id = $2;
@@ -74,7 +74,7 @@ func (d *postgres) GetUserData(ctx context.Context, data, id, user string) (inte
 		}
 		res = bin
 
-	case "text":
+	case entity.Text:
 		var text entity.UserText
 		query := `
 		select title,note,meta  from text_data where id = $1 and user_id = $2;
@@ -102,7 +102,7 @@ func (d *postgres) GetUserData(ctx context.Context, data, id, user string) (inte
 			return "", err
 		}
 		res = text
-	case "card":
+	case entity.Card:
 		var card entity.UserCard
 		query := `
 		select card_holder,card_number,card_validity_period,cvc_code,meta  from cards_data where id = $1 and user_id = $2;
@@ -146,7 +146,7 @@ func (d *postgres) SelectUserData(ctx context.Context, data, user string) (inter
 	var res interface{}
 
 	switch data {
-	case "credentials":
+	case entity.Credentials:
 		var credentials []entity.CutCredentials
 		var credential entity.CutCredentials
 		query := `
@@ -167,7 +167,7 @@ func (d *postgres) SelectUserData(ctx context.Context, data, user string) (inter
 			credentials = append(credentials, credential)
 		}
 		res = credentials
-	case "binary":
+	case entity.Binary:
 		var bins []entity.CutBinary
 		var bin entity.CutBinary
 		query := `
@@ -188,7 +188,7 @@ func (d *postgres) SelectUserData(ctx context.Context, data, user string) (inter
 			bins = append(bins, bin)
 		}
 		res = bins
-	case "text":
+	case entity.Text:
 		var texts []entity.CutText
 		var text entity.CutText
 		query := `
@@ -210,7 +210,7 @@ func (d *postgres) SelectUserData(ctx context.Context, data, user string) (inter
 		}
 		fmt.Println(texts)
 		res = texts
-	case "card":
+	case entity.Card:
 		var cards []entity.CutCard
 		var card entity.CutCard
 		query := `

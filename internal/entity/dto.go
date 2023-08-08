@@ -68,3 +68,14 @@ type CutCredentials struct {
 	ServiceName string `json:"service-name"`
 	Meta        string `json:"meta"`
 }
+
+const (
+	// Credentials const for switch case by data type
+	Credentials string = "credentials"
+	// Card const for switch case by data type
+	Card = "card"
+	// Binary const for switch case by data type
+	Binary = "binary"
+	// Text const for switch case by data type
+	Text = "text"
+)
