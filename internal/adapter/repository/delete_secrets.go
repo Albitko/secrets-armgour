@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -21,6 +22,12 @@ func (d *postgres) DeleteUserData(ctx context.Context, data, id string) error {
 		query = `delete from text_data where id = $1`
 	case entity.Card:
 		query = `delete from cards_data where id = $1`
+	default:
+		d.l.Errorf(
+			"error unsupported data type",
+		)
+		cancel()
+		return fmt.Errorf("unsupported data type")
 	}
 	defer cancel()
 	delStmnt, err := d.db.PrepareContext(

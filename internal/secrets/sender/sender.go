@@ -134,6 +134,8 @@ func (s *sender) GetUserSecrets(secretType, user string, idx int) (interface{}, 
 			return card, err
 		}
 		res = card
+	default:
+		return res, fmt.Errorf("unsupported data type")
 	}
 	return res, err
 }
@@ -171,6 +173,8 @@ func (s *sender) ListUserSecrets(data, user string) (interface{}, error) {
 			return card, err
 		}
 		res = card
+	default:
+		return res, fmt.Errorf("unsupported data type")
 	}
 	return res, err
 }

@@ -134,6 +134,8 @@ func New(s sender) *cobra.Command {
 				}
 				fmt.Println("Card holder", holderDec,
 					"Card number", numberDec, "Validity period", periodDec, "CVC", cvcDec, "Description:", metaDec)
+			default:
+				fmt.Println("Unsupported data type")
 			}
 		},
 	}

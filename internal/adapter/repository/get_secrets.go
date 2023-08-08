@@ -132,6 +132,11 @@ func (d *postgres) GetUserData(ctx context.Context, data, id, user string) (inte
 			return "", err
 		}
 		res = card
+	default:
+		d.l.Errorf(
+			"error unsupported data type",
+		)
+		return res, fmt.Errorf("unsupported data type")
 	}
 
 	return res, nil
@@ -231,6 +236,11 @@ func (d *postgres) SelectUserData(ctx context.Context, data, user string) (inter
 			cards = append(cards, card)
 		}
 		res = cards
+	default:
+		d.l.Errorf(
+			"error unsupported data type",
+		)
+		return res, fmt.Errorf("unsupported data type")
 	}
 	defer d.closeRows(rows)
 
