@@ -14,7 +14,7 @@ import (
 
 // Run - server side application
 func Run() {
-	log := logger.Init()
+	log := logger.New()
 	appCfg, err := config.NewServerFromEnv(log)
 
 	if err != nil {

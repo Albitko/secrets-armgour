@@ -8,8 +8,8 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// Init - main server side login
-func Init() *zap.SugaredLogger {
+// New - main server side login
+func New() *zap.SugaredLogger {
 	file, err := os.Create("armgour-server.log")
 	if err != nil {
 		panic(fmt.Errorf("error open file for logs: %w", err))
