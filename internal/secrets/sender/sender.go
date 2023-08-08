@@ -103,8 +103,11 @@ func (s *sender) DeleteUserSecrets(secretType string, idx int) error {
 
 // GetUserSecrets - use http client for get user data
 func (s *sender) GetUserSecrets(secretType, user string, idx int) (interface{}, error) {
-	resp, err := s.api.GetSecret(secretType, user, idx)
 	var res interface{}
+	resp, err := s.api.GetSecret(secretType, user, idx)
+	if err != nil {
+		return res, err
+	}
 	switch secretType {
 	case entity.Credentials:
 		var cred entity.UserCredentials
@@ -142,8 +145,11 @@ func (s *sender) GetUserSecrets(secretType, user string, idx int) (interface{}, 
 
 // ListUserSecrets - use http client for list all user data
 func (s *sender) ListUserSecrets(data, user string) (interface{}, error) {
-	resp, err := s.api.ListSecrets(data, user)
 	var res interface{}
+	resp, err := s.api.ListSecrets(data, user)
+	if err != nil {
+		return res, err
+	}
 	switch data {
 	case entity.Credentials:
 		var cred []entity.CutCredentials
